@@ -1,0 +1,1 @@
+public record PackageProcessedEvent(bool Accepted, PackageInfo Info);
