@@ -52,6 +52,10 @@ public class InspectController : MonoBehaviour
         };
     }
 
+ 
+
+
+
     private void OnDisable()
     {
         _inputActions.Player.Disable();

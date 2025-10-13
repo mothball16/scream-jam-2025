@@ -433,7 +433,6 @@ GameObject:
   m_Component:
   - component: {fileID: 7651374653313134843}
   - component: {fileID: 898975981633482667}
-  - component: {fileID: 9063111935221230818}
   m_Layer: 0
   m_Name: CameraController
   m_TagString: Untagged
@@ -472,21 +471,6 @@ MonoBehaviour:
   _defaultTarget: {fileID: 2960925047470644843}
   _lerpSpeed: 8
   _sens: 40
---- !u!114 &9063111935221230818
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 462337147886313447}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 65d88a7961460344dbf108172d4c6100, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _unzoomFOV: 60
-  _zoomFOV: 30
-  _lerpSpeed: 5
 --- !u!1 &520324219780733524
 GameObject:
   m_ObjectHideFlags: 0
@@ -6554,6 +6538,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   packageDroppedClip: {fileID: 8300000, guid: 3a1820d883f3d6d4bb63dba61c1c0644, type: 3}
   packageSpawnedClip: {fileID: 0}
+  correctChoice: {fileID: 0}
+  incorrectChoice: {fileID: 0}
+  scalePress: {fileID: 0}
   packageProcessedClip: {fileID: 0}
   ConveryorSound: {fileID: 0}
   startLoopClips:
