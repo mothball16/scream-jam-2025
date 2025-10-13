@@ -20,6 +20,7 @@ public class ConveyorBelt : MonoBehaviour
         col.rigidbody.linearVelocity = Vector3.Lerp(col.rigidbody.linearVelocity, _dir * _speed, Time.deltaTime * _lerpSpeed);
     }
 
+
     private void Update()
     {
         _dir = transform.TransformDirection(_root.forward);
