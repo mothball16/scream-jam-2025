@@ -7,6 +7,7 @@ using Random = UnityEngine.Random;
 using PAC = PackageAttributeConstraints;
 /// <summary>
 /// The purpose of this script is to create the packages and set up a way to order/script the packages on days
+/// 
 /// </summary>
 public class PackageGenerator : MonoBehaviour
 {
