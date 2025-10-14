@@ -10,34 +10,44 @@ using PAC = PackageAttributeConstraints;
 /// </summary>
 public class LevelManager : MonoBehaviour
 {
-    [SerializeField] private int _packagesLeft;
-    [SerializeField] private Transform _spawn;
-    public GameObject[] _packages;
-
-    private void SpawnPackage()
-    {
-        GameObject package = Instantiate(
-                _packages[0],                                        //Prefab Chosen 
-                _spawn.position,                                     //Position of Spawn 
-                Quaternion.identity);
-
-        var info = package.AddComponent<PackageInfo>();
-        package.GetComponent<PackageInfo>().data = new() {
-            { typeof(Weight), new Weight { Value = 8, DisplayValue = 7 } },
-            { typeof(From), new From { DisplayValue = "123 street\nunit 1\nnew york NY\n10304"} },
-            { typeof(ShipTo), new ShipTo { DisplayValue = "123 street\nunit 1\nnew york NY\n10304"} },
-            { typeof(ShippingDate), new ShippingDate { Value = Convert.ToString(PackageAttributeConstraints.DayOneDate + 1)} },
-            { typeof(Remarks), new Remarks { DisplayValue = "pass my shit"} },
-            { typeof(OrderID), new OrderID{ DisplayValue = 124449284 } }
-        };
-
-
-        EventBus.Publish(new PackageSpawnedEvent(package));
-    }
-
+    private int _packagesLeft;
+    public Queue<Package> packages;
+    public PackageGenerator PackageGenerator;
+    public GameManager GameManager;
+    private List<IDisposable> _connections;
     void Start()
     {
-        
+        packages = new Queue<Package>();
+        switch (1)
+        {
+            case 1:
+                Vector2 weights = PackageGenerator.GenerateRandomWeight(5);
+                packages.Enqueue(new Package(true,(int)weights.x, (int)weights.y, "Ben","Joe",PAC.DayOneDate.ToString(),"I sure hope nothing bad happens today",304948,"Amazon"));
+                packages.Enqueue(new Package(true,8, 8, "Tom", "Tim", (PAC.DayOneDate+3).ToString(), "Why is the date a string but its a number", 4892857, "Fexed"));
+                _packagesLeft = packages.Count;
+                break;
+            case 2:
+                break;
+            case 3:
+                break;
+            default:
+                break;
+        }
+
+    }
+
+    private void OnEnable()
+    {
+        _connections = new()
+        {
+            EventBus.Subscribe<DecisionMadeEvent>(OnDecisionMade)
+        };
+    }
+
+    private void OnDisable()
+    {
+        _connections.ForEach(x => x.Dispose());
+        _connections.Clear();
     }
 
     // Update is called once per frame
@@ -48,11 +58,16 @@ public class LevelManager : MonoBehaviour
 
     public int GetRemainingPackages() => _packagesLeft;
 
+    private void OnDecisionMade(DecisionMadeEvent msg)
+    {
+        Debug.Log(msg.Accepted);
+    }
+
     private void CheckPackage()
     {
         if(_packagesLeft > 0 && CountObjectsWithTag("Package") == 0)
         {
-            SpawnRandomPackage();
+            PackageGenerator.SpawnPackage(packages.Dequeue());
             _packagesLeft--;
         }
     }
@@ -62,36 +77,16 @@ public class LevelManager : MonoBehaviour
         return taggedObjects.Length;
     }
 
-    private void SpawnRandomPackage()
+    public void EndDay()
     {
-        GameObject package = Instantiate(
-                _packages[0],                                        //Prefab Chosen 
-                _spawn.position,                                     //Position of Spawn 
-                Quaternion.identity);
-
-        int chance = Random.Range(1, 101);
-        int weight = Random.Range(PAC.WeightLimits[0], PAC.WeightLimits[1]+1);
-        int displayWeight = weight;
-
-        if(chance <= 25)
+        switch (1)
         {
-            displayWeight += (int) Random.Range(-PAC.WeightMaxDeviationAmount, PAC.WeightMaxDeviationAmount);
+            case 1:
+                break;
+            case 2:
+                break;
+            case 3: 
+                break;
         }
-        
-        int addressFromNum = Random.Range(1, 1000);
-        int addressToNum = Random.Range(1, 1000);
-
-        var info = package.AddComponent<PackageInfo>();
-        package.GetComponent<PackageInfo>().data = new() {
-            { typeof(Weight), new Weight { Value = weight, DisplayValue = displayWeight } },
-            { typeof(From), new From { DisplayValue = "123 street\nunit 1\nnew york NY\n10304"} },
-            { typeof(ShipTo), new ShipTo { DisplayValue = "123 street\nunit 1\nnew york NY\n10304"} },
-            { typeof(ShippingDate), new ShippingDate { Value = Convert.ToString(PackageAttributeConstraints.DayOneDate + 1)} },
-            { typeof(Remarks), new Remarks { DisplayValue = "pass my shit"} },
-            { typeof(OrderID), new OrderID{ DisplayValue = 124449284 } }
-        };
-
-        EventBus.Publish(new PackageSpawnedEvent(package));
     }
-    
 }
