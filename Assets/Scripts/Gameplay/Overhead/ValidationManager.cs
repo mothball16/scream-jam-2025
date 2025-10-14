@@ -57,7 +57,7 @@ public class ValidationManager : MonoBehaviour
         if (data.TryGetValue(typeof(From), out var c))
         {
             from = c as From;
-            if (PackageAttributeConstraints.BannedShipFromOnThirdDay.Contains(from.Value))
+            if (PackageAttributeConstraints.BannedRegionsOnThirdDay.Contains(from.Value))
             {
                 citations.Add("BLACKLISTED SENDER");
                 citationWeight += 2;
@@ -72,7 +72,7 @@ public class ValidationManager : MonoBehaviour
         if (data.TryGetValue(typeof(ShipTo), out var d))
         {
             shipTo = d as ShipTo;
-            if (PackageAttributeConstraints.BannedShipToOnSecondDay.Contains(shipTo.Value))
+            if (PackageAttributeConstraints.BannedRegionOnSecondDay.Contains(shipTo.Value))
             {
                 citations.Add("BLACKLISTED RECIPIENT");
                 citationWeight += 2;

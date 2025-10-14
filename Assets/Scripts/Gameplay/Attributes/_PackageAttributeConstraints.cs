@@ -33,9 +33,9 @@ public static class PackageAttributeConstraints
     "Vista", "View", "Lookout", "Point", "Harbor", "Bay", "Cove", "Shore",
     "Island", "Harborview", "Seaside", "Ocean" };
     public static readonly string[] AddressLineOneEnd = new[] {"St", "Rd", "Ave", "Blvd", "Ln", "Dr", "Ct", "Pl", "Cir", "Way" };
-    public static readonly string[] Regions = new[] { "West Market", "East Industrial", "North Settlement", "South Quarry", "Old Port City" };
-    public static readonly string[] BannedShipToOnSecondDay = new[] { "Old Port City" };
-    public static readonly string[] BannedShipFromOnThirdDay = new[] { "North Settlement" };
+    public static readonly string[] Regions = new[] { "West Market", "East Industrial", "South Quarry", "North Settlement", "Old Port City" };
+    public static readonly string[] BannedRegionOnSecondDay = new[] { "Old Port City" };
+    public static readonly string[] BannedRegionsOnThirdDay = new[] { "Old Port City", "North Settlement" };
     public const double InvalidZIPCodeBaseChance = 0.1; // first number of zipcode must align with the index of the region, other 4 are irrelevant
 
     // date

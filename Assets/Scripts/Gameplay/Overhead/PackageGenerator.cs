@@ -39,7 +39,7 @@ public class PackageGenerator : MonoBehaviour
 
         var info = packageObject.AddComponent<PackageInfo>();
         packageObject.GetComponent<PackageInfo>().data = new() {
-            { typeof(Weight), new Weight { Value = package.Weight, DisplayValue = package.DisplayWeight } },
+            { typeof(Weight), new Weight { Value = package.WeightPair.x, DisplayValue = package.WeightPair.y } },
             { typeof(From), new From { DisplayValue = package.From} },
             { typeof(ShipTo), new ShipTo { DisplayValue = package.ShipTo} },
             { typeof(ShippingDate), new ShippingDate { Value = package.Date} },
@@ -49,50 +49,154 @@ public class PackageGenerator : MonoBehaviour
         };
         EventBus.Publish(new PackageSpawnedEvent(packageObject));
     }
-    /// <summary>
-    /// Generates a random weightPair (ActualWeight,DisplayWeight)
-    /// </summary>
-    /// <returns>Vector2 weightPair (ActualWeight,DisplayWeight)</returns>
-    public Vector2 GenerateRandomWeight()
+
+    public Vector2 GenerateGoodWeightPair()
+    {
+        int weight = (int)Random.Range(PAC.WeightLimits[0], PAC.WeightLimits[1] + 1);
+        Vector2 weightPair = new Vector2(weight, weight);
+        return weightPair;
+    }
+
+    public Vector2 GenerateBadWeightPair()
     {
         int weight = (int)Random.Range(PAC.WeightLimits[0], PAC.WeightLimits[1] + 1);
         Vector2 weightPair = new Vector2(weight, weight);
         float roll = Random.Range(0f, 1f);
-        if (roll < 0.25)
+        if (roll < 0.5)
         {
-            if (roll < 0.13)
-            {
-                weightPair.y += Random.Range(1, PAC.WeightMaxDeviationAmount + 1);
-            }
-            else
-            {
-                weightPair.y -= Random.Range(1, PAC.WeightMaxDeviationAmount + 1);
-            }
+            weightPair.y += Random.Range(1, PAC.WeightMaxDeviationAmount + 1);
+        }
+        else
+        {
+            weightPair.y -= Random.Range(1, PAC.WeightMaxDeviationAmount + 1);
         }
         return weightPair;
     }
-    /// <summary>
-    /// Generates a random weightPair (ActualWeight,DisplayWeight)
-    /// </summary>
-    /// <param name="num">The weight value you want</param>
-    /// <returns>Vector2 weightPair (ActualWeight,DisplayWeight)</returns>
-    public Vector2 GenerateRandomWeight(int num)
+
+    public string GenerateGoodShipper()
     {
-        int weight = num;
-        Vector2 weightPair = new Vector2(weight, weight);
-        float roll = Random.Range(0f, 1f);
-        if (roll < 0.25)
-        {
-            if (roll < 0.13)
-            {
-                weightPair.y += Random.Range(1, PAC.WeightMaxDeviationAmount + 1);
-            }
-            else
-            {
-                weightPair.y -= Random.Range(1, PAC.WeightMaxDeviationAmount + 1);
-            }
-        }
-        return weightPair;
+        string shipper;
+        int index;
+        index = Random.Range(0, PAC.ValidShippers.Length);
+        shipper = PAC.ValidShippers[index];
+        return shipper;
     }
+
+    public string GenerateBadShipper()
+    {
+        string shipper;
+        int index;
+        index = Random.Range(0, PAC.InvalidShippers.Length);
+        shipper = PAC.InvalidShippers[index];
+        return shipper;
+    }
+
+    public string GenerateGoodAddress(int day)
+    {
+        string address = "";
+        int regionIndex;
+        address += Random.Range(PAC.AddressLineOneNumLimits[0], PAC.AddressLineOneNumLimits[1] + 1) + " ";
+        address += PAC.AddressLineOneMid[Random.Range(0, PAC.AddressLineOneMid.Length)] + " ";
+        address += PAC.AddressLineOneEnd[Random.Range(0, PAC.AddressLineOneEnd.Length)] + " \n";
+        switch(day)
+        {
+            case 1:
+                regionIndex = Random.Range(0, PAC.Regions.Length);
+                break;
+            case 2:
+                regionIndex = Random.Range(0, PAC.Regions.Length - 1);
+                break;
+            case 3:
+                regionIndex = Random.Range(0, PAC.Regions.Length - 2);
+                break;
+            default:
+                regionIndex = 0;
+                break;
+        }
+        address += PAC.Regions[regionIndex] + " ";
+        address += Random.Range((regionIndex + 1) * 10000, (regionIndex + 2) * 10000);
+        return address;
+    }
+    public string GenerateBadZipAddress(int day)
+    {
+        string address = "";
+        int regionIndex;
+        address += Random.Range(PAC.AddressLineOneNumLimits[0], PAC.AddressLineOneNumLimits[1] + 1) + " ";
+        address += PAC.AddressLineOneMid[Random.Range(0, PAC.AddressLineOneMid.Length)] + " ";
+        address += PAC.AddressLineOneEnd[Random.Range(0, PAC.AddressLineOneEnd.Length)] + " \n";
+        switch (day)
+        {
+            case 1:
+                regionIndex = Random.Range(0, PAC.Regions.Length);
+                break;
+            case 2:
+                regionIndex = Random.Range(0, PAC.Regions.Length - 1);
+                break;
+            case 3:
+                regionIndex = Random.Range(0, PAC.Regions.Length - 2);
+                break;
+            default:
+                regionIndex = 0;
+                break;
+        }
+        address += PAC.Regions[regionIndex] + " ";
+        address += Random.Range((regionIndex + 2) * 10000, (regionIndex + 5) * 10000);
+        return address;
+    }
+
+    public string GenerateBadRegionAddress(int day)
+    {
+        string address = "";
+        int regionIndex;
+        address += Random.Range(PAC.AddressLineOneNumLimits[0], PAC.AddressLineOneNumLimits[1] + 1) + " ";
+        address += PAC.AddressLineOneMid[Random.Range(0, PAC.AddressLineOneMid.Length)] + " ";
+        address += PAC.AddressLineOneEnd[Random.Range(0, PAC.AddressLineOneEnd.Length)] + " \n";
+        switch (day)
+        {
+            case 3:
+                regionIndex = Random.Range(PAC.Regions.Length - 2, PAC.Regions.Length);
+                break;
+            default:
+                regionIndex = PAC.Regions.Length - 1;
+                break;
+        }
+        address += PAC.Regions[regionIndex] + " ";
+        address += Random.Range((regionIndex + 2) * 10000, (regionIndex + 5) * 10000);
+        return address;
+    }
+
+    public int GetCurrentDate(int day)
+    {
+        return day + PAC.DayOneDate;
+    }
+
+    public int GetBadDate(int day)
+    {
+        int deviation = 0;
+        while(deviation == 0)
+        {
+            deviation = Random.Range(-PAC.DateDeviationFromCurrent, PAC.DateDeviationFromCurrent+1);
+        }
+        return day + deviation + PAC.DayOneDate;
+        
+    }
+
+    public string GenerateGoodRemark()
+    {
+        int index = Random.Range(0, PAC.UselessRemarks.Length);
+        return PAC.UselessRemarks[index];
+    }
+
+    public string GenerateBadRemark()
+    {
+        int index = Random.Range(0, PAC.ThreateningRemarks.Length);
+        return PAC.ThreateningRemarks[index];
+    }
+
+    public int GenerateID()
+    {
+        return Random.Range(1000000, 10000000);
+    }
+
 }
     
