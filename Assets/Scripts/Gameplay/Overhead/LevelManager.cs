@@ -16,6 +16,8 @@ public class LevelManager : MonoBehaviour
     public GameManager GameManager;
     private List<IDisposable> _connections;
     public Package activePackage;
+
+
     void Start()
     {
         int day = 1;
