@@ -1,0 +1,1 @@
+public record LoadLevelEvent(int day);

@@ -83,7 +83,7 @@ public class InspectController : MonoBehaviour
         {
             ChangeState(InteractionState.PackageRejected);
             // nobody gaf about the package anymore, so we dispose here
-            Destroy(_package, 3);
+            Destroy(_package, 0);
         }
 
         // send package data over for validation
