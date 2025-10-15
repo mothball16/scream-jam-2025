@@ -12,10 +12,12 @@ public class LevelManager : MonoBehaviour
 {
     private int _packagesLeft;
     public Queue<Package> packages;
-    public PackageGenerator PackageGenerator;
+    public PackageGenerator pg;
     public GameManager GameManager;
     private List<IDisposable> _connections;
     public Package activePackage;
+
+
     void Start()
     {
         int day = 1;
@@ -23,13 +25,13 @@ public class LevelManager : MonoBehaviour
         switch (day)
         {
             case 1:
-                packages.Enqueue(new Package(true,PackageGenerator.GenerateGoodWeightPair(), PackageGenerator.GenerateGoodAddress(day), PackageGenerator.GenerateGoodAddress(day), PackageGenerator.GetCurrentDate(day).ToString(),PackageGenerator.GenerateGoodRemark(),PackageGenerator.GenerateID(),PackageGenerator.GenerateGoodShipper()));
-                packages.Enqueue(new Package(false, PackageGenerator.GenerateGoodWeightPair(), PackageGenerator.GenerateGoodAddress(day), PackageGenerator.GenerateGoodAddress(day), PackageGenerator.GetCurrentDate(day).ToString(), PackageGenerator.GenerateGoodRemark(), PackageGenerator.GenerateID(), PackageGenerator.GenerateGoodShipper()));
-                packages.Enqueue(new Package(true, PackageGenerator.GenerateGoodWeightPair(), PackageGenerator.GenerateGoodAddress(day), PackageGenerator.GenerateGoodAddress(day), PackageGenerator.GetCurrentDate(day).ToString(), PackageGenerator.GenerateGoodRemark(), PackageGenerator.GenerateID(), PackageGenerator.GenerateGoodShipper()));
-                packages.Enqueue(new Package(true, PackageGenerator.GenerateGoodWeightPair(), PackageGenerator.GenerateGoodAddress(day), PackageGenerator.GenerateGoodAddress(day), PackageGenerator.GetCurrentDate(day).ToString(), PackageGenerator.GenerateGoodRemark(), PackageGenerator.GenerateID(), PackageGenerator.GenerateGoodShipper()));
-                packages.Enqueue(new Package(true, PackageGenerator.GenerateGoodWeightPair(), PackageGenerator.GenerateGoodAddress(day), PackageGenerator.GenerateGoodAddress(day), PackageGenerator.GetCurrentDate(day).ToString(), PackageGenerator.GenerateGoodRemark(), PackageGenerator.GenerateID(), PackageGenerator.GenerateGoodShipper()));
-                packages.Enqueue(new Package(true, PackageGenerator.GenerateGoodWeightPair(), PackageGenerator.GenerateGoodAddress(day), PackageGenerator.GenerateGoodAddress(day), PackageGenerator.GetCurrentDate(day).ToString(), PackageGenerator.GenerateGoodRemark(), PackageGenerator.GenerateID(), PackageGenerator.GenerateGoodShipper()));
-                packages.Enqueue(new Package(true, PackageGenerator.GenerateGoodWeightPair(), PackageGenerator.GenerateGoodAddress(day), PackageGenerator.GenerateGoodAddress(day), PackageGenerator.GetCurrentDate(day).ToString(), PackageGenerator.GenerateGoodRemark(), PackageGenerator.GenerateID(), PackageGenerator.GenerateGoodShipper()));
+                packages.Enqueue(new Package(true,pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(),pg.GenerateGoodRemark(),pg.GenerateID(),pg.GenerateGoodShipper()));
+                packages.Enqueue(new Package(false, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
+                packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
+                packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
+                packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
+                packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
+                packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
 
                 _packagesLeft = packages.Count;
                 break;
@@ -83,7 +85,7 @@ public class LevelManager : MonoBehaviour
         if(_packagesLeft > 0 && CountObjectsWithTag("Package") == 0)
         {
             activePackage = packages.Dequeue();
-            PackageGenerator.SpawnPackage(activePackage);
+            pg.SpawnPackage(activePackage);
             _packagesLeft--;
         }
     }
