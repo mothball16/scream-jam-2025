@@ -12,11 +12,10 @@ public class LevelManager : MonoBehaviour
 {
     private int _packagesLeft;
     public Queue<Package> packages;
-    public PackageGenerator pg;
-    public GameManager GameManager;
+    public PackageGenerator pg = PackageGenerator.Instance;
+    public GameManager GameManager = GameManager.Instance;
     private List<IDisposable> _connections;
     public Package activePackage;
-
 
     void Start()
     {
