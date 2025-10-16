@@ -1,4 +1,6 @@
-using System.Collections.Generic;
+
+
+/*using System.Collections.Generic;
 using System;
 using UnityEngine;
 using Assets.Scripts.Gameplay.Attributes;
@@ -145,3 +147,4 @@ public class ValidationManager : MonoBehaviour
         _disposables.Clear();
     }
 }
+*/

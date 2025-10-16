@@ -133,9 +133,19 @@ public class LevelManager : MonoBehaviour
 
     private void OnDecisionMade(DecisionMadeEvent msg)
     {
-        Utils.Talk(new("(processing)"));
-        Debug.Log(msg.Accepted);
-        if(msg.Accepted != _activePackage.Valid)
+        if (_activePackage == null || _activePackageModel == null)
+        {
+            Utils.Talk(new("how the hell did you call this? there is no package to make a decision on", Color: ChatColors.Angry));
+            return;
+        }
+
+        if (!_activePackageModel.TryGetComponent<PackageInfo>(out var info))
+            Debug.LogError("no package info on the active package model");
+
+        Utils.Talk(new("<i>(processing)</i>", 0));
+        info.Processed = true;
+
+        if (msg.Accepted != _activePackage.Valid)
         {
             Debug.Log("Wrong Decesion");
             violations++;
@@ -151,6 +161,10 @@ public class LevelManager : MonoBehaviour
 
         if (_activePackage.OnProcessedCallback is not null)
             _activePackage.OnProcessedCallback(_activePackageModel, msg.Accepted);
+
+        Destroy(_activePackageModel, 1);
+        _activePackage = null;
+        _activePackageModel = null;
     }
 
     private void CheckPackage()

@@ -74,7 +74,7 @@ public class SoundManager : MonoBehaviour
                 (e) => PlaySound(packageSpawnedClip, 0.8f)),
             EventBus.Subscribe<IncorrectChoiceEvent>(
                 (e) => PlaySound(incorrectChoice, 0.8f)),
-            EventBus.Subscribe<PackageProcessedEvent>(
+            EventBus.Subscribe<DecisionMadeEvent>(
                 (e) => PlaySound(packageProcessedClip, 0.5f)),
             EventBus.Subscribe<ScalePressedEvent>(
                 (e) => PlaySound(scalePress, 0.8f))

@@ -1,1 +1,1 @@
-public record PackageProcessedEvent(bool Accepted, PackageInfo Info);
+public record DecisionMadeEvent(bool Accepted);
