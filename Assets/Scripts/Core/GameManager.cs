@@ -1,10 +1,22 @@
+using Assets.Scripts;
 using Assets.Scripts.Util;
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+public enum Days
+{
+    DayOne = 1,
+    DayTwo = 2,
+    DayThree = 3,
+    DayFour = 4,
+    FiredForSuckingAtJob
+}
+
+
 public class GameManager : MonoSingleton<GameManager>
 {
-    public int CurrentDay { get; set; }
+    public Days CurrentDay;
     
 
     public override void Init()
@@ -12,9 +24,10 @@ public class GameManager : MonoSingleton<GameManager>
 
     }
 
-    public void LoadLevel(int day)
+    public void LoadLevel(Days day)
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        EventBus.Publish(new LoadLevelEvent(day));
+        CurrentDay = day;
+        Debug.Log(day);
+        SceneManager.LoadScene(SceneNames.GameScene);
     }
 }

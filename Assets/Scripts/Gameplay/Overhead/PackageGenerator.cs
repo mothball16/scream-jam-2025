@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
 using PAC = PackageAttributeConstraints;
+using static UnityEngine.Analytics.IAnalytic;
 /// <summary>
 /// The purpose of this script is to create the packages and set up a way to order/script the packages on days
 /// 
@@ -47,8 +48,7 @@ public class PackageGenerator : MonoBehaviour
                 _spawn.position,                                     //Position of Spawn 
                 Quaternion.identity);
 
-        var info = packageObject.AddComponent<PackageInfo>();
-        packageObject.GetComponent<PackageInfo>().data = new() {
+        packageObject.AddComponent<PackageInfo>().data = new() {
             { typeof(Weight), new Weight { Value = package.WeightPair.x, DisplayValue = package.WeightPair.y } },
             { typeof(From), new From { DisplayValue = package.From} },
             { typeof(ShipTo), new ShipTo { DisplayValue = package.ShipTo} },
@@ -70,7 +70,7 @@ public class PackageGenerator : MonoBehaviour
     public Vector2 GenerateBadWeightPair()
     {
         int weight = (int)Random.Range(PAC.WeightLimits[0], PAC.WeightLimits[1] + 1);
-        Vector2 weightPair = new Vector2(weight, weight);
+        Vector2 weightPair = new(weight, weight);
         float roll = Random.Range(0f, 1f);
         if (roll < 0.5)
         {
@@ -101,93 +101,70 @@ public class PackageGenerator : MonoBehaviour
         return shipper;
     }
 
-    public string GenerateGoodAddress(int day)
+    public string GenerateGoodAddress(Days day)
     {
         string address = "";
-        int regionIndex;
         address += Random.Range(PAC.AddressLineOneNumLimits[0], PAC.AddressLineOneNumLimits[1] + 1) + " ";
         address += PAC.AddressLineOneMid[Random.Range(0, PAC.AddressLineOneMid.Length)] + " ";
         address += PAC.AddressLineOneEnd[Random.Range(0, PAC.AddressLineOneEnd.Length)] + " \n";
-        switch(day)
+        var regionIndex = day switch
         {
-            case 1:
-                regionIndex = Random.Range(0, PAC.Regions.Length);
-                break;
-            case 2:
-                regionIndex = Random.Range(0, PAC.Regions.Length - 1);
-                break;
-            case 3:
-                regionIndex = Random.Range(0, PAC.Regions.Length - 2);
-                break;
-            default:
-                regionIndex = 0;
-                break;
-        }
+            Days.DayOne => Random.Range(0, PAC.Regions.Length),
+            Days.DayTwo => Random.Range(0, PAC.Regions.Length - 1),
+            Days.DayThree => Random.Range(0, PAC.Regions.Length - 2),
+            _ => 0,
+        };
         address += PAC.Regions[regionIndex] + " ";
         address += Random.Range((regionIndex + 1) * 10000, (regionIndex + 2) * 10000);
         return address;
     }
-    public string GenerateBadZipAddress(int day)
+    public string GenerateBadZipAddress(Days day)
     {
         string address = "";
-        int regionIndex;
         address += Random.Range(PAC.AddressLineOneNumLimits[0], PAC.AddressLineOneNumLimits[1] + 1) + " ";
         address += PAC.AddressLineOneMid[Random.Range(0, PAC.AddressLineOneMid.Length)] + " ";
         address += PAC.AddressLineOneEnd[Random.Range(0, PAC.AddressLineOneEnd.Length)] + " \n";
-        switch (day)
+        var regionIndex = day switch
         {
-            case 1:
-                regionIndex = Random.Range(0, PAC.Regions.Length);
-                break;
-            case 2:
-                regionIndex = Random.Range(0, PAC.Regions.Length - 1);
-                break;
-            case 3:
-                regionIndex = Random.Range(0, PAC.Regions.Length - 2);
-                break;
-            default:
-                regionIndex = 0;
-                break;
-        }
+            Days.DayOne => Random.Range(0, PAC.Regions.Length),
+            Days.DayTwo => Random.Range(0, PAC.Regions.Length - 1),
+            Days.DayThree => Random.Range(0, PAC.Regions.Length - 2),
+            _ => 0,
+        };
         address += PAC.Regions[regionIndex] + " ";
         address += Random.Range((regionIndex + 2) * 10000, (regionIndex + 5) * 10000);
         return address;
     }
 
-    public string GenerateBadRegionAddress(int day)
+    public string GenerateBadRegionAddress(Days day)
     {
         string address = "";
-        int regionIndex;
         address += Random.Range(PAC.AddressLineOneNumLimits[0], PAC.AddressLineOneNumLimits[1] + 1) + " ";
         address += PAC.AddressLineOneMid[Random.Range(0, PAC.AddressLineOneMid.Length)] + " ";
         address += PAC.AddressLineOneEnd[Random.Range(0, PAC.AddressLineOneEnd.Length)] + " \n";
-        switch (day)
+        var regionIndex = day switch
         {
-            case 3:
-                regionIndex = Random.Range(PAC.Regions.Length - 2, PAC.Regions.Length);
-                break;
-            default:
-                regionIndex = PAC.Regions.Length - 1;
-                break;
-        }
+            Days.DayThree => Random.Range(PAC.Regions.Length - 2, PAC.Regions.Length),
+            _ => PAC.Regions.Length - 1,
+        };
         address += PAC.Regions[regionIndex] + " ";
         address += Random.Range((regionIndex + 2) * 10000, (regionIndex + 5) * 10000);
         return address;
     }
 
-    public int GetCurrentDate(int day)
+    public int GetCurrentDate(Days day)
     {
-        return day + PAC.DayOneDate;
+        return (int)day + PAC.DayOneDate;
     }
 
-    public int GetBadDate(int day)
+    public int GetBadDate(Days day)
     {
         int deviation = 0;
         while(deviation == 0)
         {
             deviation = Random.Range(-PAC.DateDeviationFromCurrent, PAC.DateDeviationFromCurrent+1);
         }
-        return day + deviation + PAC.DayOneDate;
+        return (int)day + deviation + PAC.DayOneDate;
         
     }
 

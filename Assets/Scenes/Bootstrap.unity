@@ -222,6 +222,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 296258e9cd4ef634d873958b2bb40dca, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  CurrentDay: 1
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
