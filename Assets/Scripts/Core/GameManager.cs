@@ -17,7 +17,8 @@ public enum Days
 
 public enum StoryFlags
 {
-    FailedFirstPackage
+    FailedFirstPackage,
+    EnablePickup
 }
 
 public class GameManager : MonoSingleton<GameManager>

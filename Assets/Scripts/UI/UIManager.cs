@@ -74,7 +74,6 @@ public class UIManager : MonoBehaviour
 
     private void OnRequestDialogue(RequestDialogueEvent e)
     {
-        Debug.Log("yo");
         var temp = Instantiate(_dialogueTemplate);
         temp.gameObject.SetActive(true);
         temp.SetParent(_dialogueBox, false);
