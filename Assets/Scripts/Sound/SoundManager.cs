@@ -66,13 +66,18 @@ public class SoundManager : MonoBehaviour
         // When the object is enabled, we subscribe to events
         _subs = new List<IDisposable>
         {
-            EventBus.Subscribe<PackageDroppedEvent>(OnPackageDropped),
-            EventBus.Subscribe<PackageSpawnedEvent>(OnPackageSpawed),
-            EventBus.Subscribe<CorrectChoiceEvent>(OnCorrectChoice),
-            EventBus.Subscribe<IncorrectChoiceEvent>(OnIncorrectChoice),
-            EventBus.Subscribe<PackageProcessedEvent>(OnPackageProcess),
-            EventBus.Subscribe<ScalePressedEvent>(OnScalePressed)
-
+            EventBus.Subscribe<PackageDroppedEvent>(
+                (e) => PlaySound(packageDroppedClip, 0.7f)),
+            EventBus.Subscribe<PackageSpawnedEvent>(
+                (e) => PlaySound(packageSpawnedClip, 0.8f)),
+            EventBus.Subscribe<CorrectChoiceEvent>(
+                (e) => PlaySound(packageSpawnedClip, 0.8f)),
+            EventBus.Subscribe<IncorrectChoiceEvent>(
+                (e) => PlaySound(incorrectChoice, 0.8f)),
+            EventBus.Subscribe<PackageProcessedEvent>(
+                (e) => PlaySound(packageProcessedClip, 0.5f)),
+            EventBus.Subscribe<ScalePressedEvent>(
+                (e) => PlaySound(scalePress, 0.8f))
         };
 
     }
@@ -87,50 +92,6 @@ public class SoundManager : MonoBehaviour
             
         }
     }
-
-    ////
-    // ======================
-    // Event Handlers
-    // ======================
-
-    private void OnPackageDropped(PackageDroppedEvent e)
-    {
-        PlaySound(packageDroppedClip, 0.7f);
-    }
-
-    //not sure
-    private void OnPackageSpawed(PackageSpawnedEvent e)
-    {
-        PlaySound(packageSpawnedClip,0.8f);
-    }
-
-
-    private void OnCorrectChoice(CorrectChoiceEvent e)
-    {
-        PlaySound(packageSpawnedClip);
-
-    }
-    
-
-    private void OnIncorrectChoice(IncorrectChoiceEvent e)
-    {
-        PlaySound(incorrectChoice);
-
-    }
-    private void OnPackageProcess(PackageProcessedEvent e)
-    {
-        PlaySound(packageProcessedClip, 0.5f);
-
-    }
-
-    private void OnScalePressed(ScalePressedEvent e)
-    {
-        PlaySound(scalePress);
-
-    }
-
-
-
     
     //Helper 
     private void PlaySound(AudioClip clip, float volume = 1f)

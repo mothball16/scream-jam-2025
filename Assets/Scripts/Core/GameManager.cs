@@ -1,5 +1,6 @@
 using Assets.Scripts;
 using Assets.Scripts.Util;
+using DG.Tweening;
 using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -28,6 +29,7 @@ public class GameManager : MonoSingleton<GameManager>
     {
         CurrentDay = day;
         Debug.Log(day);
+        DOTween.KillAll();
         SceneManager.LoadScene(SceneNames.GameScene);
     }
 }

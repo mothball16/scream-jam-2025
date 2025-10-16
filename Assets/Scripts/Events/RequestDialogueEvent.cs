@@ -1,1 +1,1 @@
-public record RequestDialogueEvent(string msg, float time);
+public record RequestDialogueEvent(string Message = "no message?", float Time = 1, ChatColors Color = ChatColors.Default);

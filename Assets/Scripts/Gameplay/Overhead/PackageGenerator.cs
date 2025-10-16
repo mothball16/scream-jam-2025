@@ -6,42 +6,20 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 using PAC = PackageAttributeConstraints;
 using static UnityEngine.Analytics.IAnalytic;
+using Assets.Scripts.Util;
 /// <summary>
 /// The purpose of this script is to create the packages and set up a way to order/script the packages on days
 /// 
 /// </summary>
-public class PackageGenerator : MonoBehaviour
+public class PackageGenerator : MonoSingleton<PackageGenerator>
 {
-    private static PackageGenerator _instance;
-    public static PackageGenerator Instance
-    {
-        get
-        {
-            if (_instance == null)
-                _instance = new();
-            return _instance;
-        }
-    }
-
-    [SerializeField] private int _packagesLeft;
     [SerializeField] private Transform _spawn;
     public GameObject[] _packages;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     /// <summary>
     /// This method spawns the package as the inputs allow
     /// </summary>
-    public void SpawnPackage(Package package)
+    public GameObject SpawnPackage(Package package)
     {
         GameObject packageObject = Instantiate(
                 _packages[0],                                        //Prefab Chosen 
@@ -58,6 +36,7 @@ public class PackageGenerator : MonoBehaviour
             { typeof(Shipper), new Shipper{ DisplayValue = package.Shipper } }
         };
         EventBus.Publish(new PackageSpawnedEvent(packageObject));
+        return packageObject;
     }
 
     public Vector2 GenerateGoodWeightPair()
