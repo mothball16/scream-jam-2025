@@ -35,36 +35,41 @@ public class LevelManager : MonoBehaviour
         var pg = PackageGenerator.Inst;
         packages = new Queue<Package>();
         violations = 0;
+        _packagesLeft = -2;
 
         switch (day)
         {
             case Days.DayOne:
                 maxViolations = 2;
+                //so we dont go to gameend during the dialogue sequence
                 Utils.Talk(new("*yawn* What up rookie."));
                 Utils.TalkDeferred(new("Welcome to your new job. Take a look around. <i>(MOUSE to look. A/D to turn.)</i>",3), 3);
-                packages.Enqueue(
-                    new Package(true, 
-                    pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), 
-                    pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper(),
-                    OnSpawnedCallback: (obj) =>
-                    {
-                        Utils.Talk(new("test, making sure OnSpawnedCallback works"));
-                        //this puts the package ontop of the conveyor window lol
-                        obj.transform.position += new Vector3(0, 5, 0);
-                    },
-                    OnProcessedCallback: (obj, accepted) => {
-                        Utils.Talk(accepted 
-                            ? new("Good work. You're doing better than the last guy already.") 
-                            : new("...yikes... who the hell hired you?", Color: ChatColors.Angry)
-                            );
-                    }));
-                packages.Enqueue(new Package(false, pg.GenerateBadWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
-                packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
-                packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
-                packages.Enqueue(new Package(false, pg.GenerateBadWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateBadRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
-                packages.Enqueue(new Package(false, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateBadShipper()));
-
-                _packagesLeft = packages.Count;
+                Utils.Defer(6, () => {
+                    Utils.Talk(new("Oh, and here's the first package. Check your manual to figure out what to do."));
+                    packages.Enqueue(
+                       new Package(true,
+                       pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day),
+                       pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper(),
+                       OnSpawnedCallback: (obj) =>
+                       {
+                           Utils.Talk(new("test, making sure OnSpawnedCallback works"));
+                           //this puts the package ontop of the conveyor window lol
+                           obj.transform.position += new Vector3(0, 5, 0);
+                       },
+                       OnProcessedCallback: (obj, accepted) => {
+                           Utils.Talk(accepted
+                               ? new("Good work. You're doing better than the last guy already.")
+                               : new("...yikes... who the hell hired you?", Color: ChatColors.Angry)
+                               );
+                       }));
+                    packages.Enqueue(new Package(false, pg.GenerateBadWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
+                    packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
+                    packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
+                    packages.Enqueue(new Package(false, pg.GenerateBadWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateBadRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
+                    packages.Enqueue(new Package(false, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateBadShipper()));
+                    _packagesLeft = packages.Count;
+                });
+               
                 break;
             case Days.DayTwo:
                 maxViolations = 1;
@@ -142,10 +147,12 @@ public class LevelManager : MonoBehaviour
         if (_packagesLeft == -1)
         {
             EndDay();
-        }
-        else if (_packagesLeft >= 0 && CountObjectsWithTag("Package") == 0)
+        } else if(_packagesLeft == -2)
         {
-            if (_packagesLeft !=0)
+            //do nothin. this is prior to game start
+        } else if (_packagesLeft >= 0 && CountObjectsWithTag("Package") == 0)
+        {
+            if (_packagesLeft != 0)
             {
                 _activePackage = packages.Dequeue();
                 _activePackageModel = PackageGenerator.Inst.SpawnPackage(_activePackage);
