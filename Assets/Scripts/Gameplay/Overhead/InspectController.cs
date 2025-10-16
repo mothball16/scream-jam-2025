@@ -100,6 +100,7 @@ public class InspectController : MonoBehaviour
 
     private void OnAction(InputAction.CallbackContext ctx)
     {
+        if (!GameManager.Inst.GetFlag(StoryFlags.EnablePickup)) { return; }
         if (_state == InteractionState.InspectingPackage)
         {
             DropPackage();
