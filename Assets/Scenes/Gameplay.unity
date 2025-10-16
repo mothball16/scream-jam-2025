@@ -124,6 +124,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 8218020620224709692, guid: f8350c46cfb9c3d4587d63cee82e642b, type: 3}
   m_PrefabInstance: {fileID: 1440615934}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &650875914 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6671782559763382830, guid: f8350c46cfb9c3d4587d63cee82e642b, type: 3}
+  m_PrefabInstance: {fileID: 1440615934}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb3d0dbb871c02148bf12237a4aa51b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!4 &659240467 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2960925047470644843, guid: f8350c46cfb9c3d4587d63cee82e642b, type: 3}
@@ -217,6 +228,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Scene3
       objectReference: {fileID: 0}
+    - target: {fileID: 8165849159831253110, guid: f8350c46cfb9c3d4587d63cee82e642b, type: 3}
+      propertyPath: pg
+      value: 
+      objectReference: {fileID: 650875914}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

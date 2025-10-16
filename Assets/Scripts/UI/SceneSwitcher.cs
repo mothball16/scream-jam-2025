@@ -7,6 +7,6 @@ public class SceneSwitcher : MonoBehaviour
     public void SwitchScene()
     {
         SceneManager.LoadScene(_scene);
-
+        EventBus.Publish(new LoadLevelEvent(1));
     }
 }

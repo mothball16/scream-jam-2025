@@ -11,6 +11,16 @@ using PAC = PackageAttributeConstraints;
 /// </summary>
 public class PackageGenerator : MonoBehaviour
 {
+    private static PackageGenerator _instance;
+    public static PackageGenerator Instance
+    {
+        get
+        {
+            if (_instance == null)
+                _instance = new();
+            return _instance;
+        }
+    }
 
     [SerializeField] private int _packagesLeft;
     [SerializeField] private Transform _spawn;

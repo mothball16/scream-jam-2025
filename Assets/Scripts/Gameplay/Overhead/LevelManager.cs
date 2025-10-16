@@ -12,32 +12,56 @@ public class LevelManager : MonoBehaviour
 {
     private int _packagesLeft;
     public Queue<Package> packages;
-    public PackageGenerator pg;
-    public GameManager GameManager;
+    public PackageGenerator pg = PackageGenerator.Instance;
+    public GameManager GameManager = GameManager.Instance;
     private List<IDisposable> _connections;
     public Package activePackage;
-
+    public int violations;
+    public int maxViolations;
 
     void Start()
     {
-        int day = 1;
+    }
+
+    private void OnLoadLevel(LoadLevelEvent e)
+    {
+
         packages = new Queue<Package>();
-        switch (day)
+        violations = 0;
+        int day = e.day;
+        switch (e.day)
         {
             case 1:
-                packages.Enqueue(new Package(true,pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(),pg.GenerateGoodRemark(),pg.GenerateID(),pg.GenerateGoodShipper()));
-                packages.Enqueue(new Package(false, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
+                maxViolations = 2;
+                packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
+                packages.Enqueue(new Package(false, pg.GenerateBadWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
                 packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
                 packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
-                packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
-                packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
-                packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
+                packages.Enqueue(new Package(false, pg.GenerateBadWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateBadRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
+                packages.Enqueue(new Package(false, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateBadShipper()));
 
                 _packagesLeft = packages.Count;
                 break;
             case 2:
+                Debug.Log("help me");
+                maxViolations = 1;
+                packages.Enqueue(new Package(false, pg.GenerateBadWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
+                packages.Enqueue(new Package(false, pg.GenerateGoodWeightPair(), pg.GenerateBadRegionAddress(day), pg.GenerateBadZipAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
+                packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
+                packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
+                packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
+                packages.Enqueue(new Package(false, pg.GenerateBadWeightPair(), pg.GenerateBadZipAddress(day), pg.GenerateBadRegionAddress(day), pg.GetBadDate(day).ToString(), pg.GenerateBadRemark(), pg.GenerateID(), pg.GenerateBadShipper()));
+                _packagesLeft = packages.Count;
                 break;
             case 3:
+                maxViolations = 0;
+                packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
+                packages.Enqueue(new Package(false, pg.GenerateBadWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateBadShipper()));
+                packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
+                packages.Enqueue(new Package(false, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateBadRemark(), pg.GenerateID(), pg.GenerateBadShipper()));
+                packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
+                packages.Enqueue(new Package(false, pg.GenerateBadWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
+                _packagesLeft = packages.Count;
                 break;
             default:
                 break;
@@ -49,7 +73,8 @@ public class LevelManager : MonoBehaviour
     {
         _connections = new()
         {
-            EventBus.Subscribe<DecisionMadeEvent>(OnDecisionMade)
+            EventBus.Subscribe<DecisionMadeEvent>(OnDecisionMade),
+            EventBus.Subscribe<LoadLevelEvent>(OnLoadLevel)
         };
     }
 
@@ -73,6 +98,11 @@ public class LevelManager : MonoBehaviour
         if(msg.Accepted != activePackage.Valid)
         {
             Debug.Log("Wrong Decesion");
+            violations++;
+            if(violations > maxViolations)
+            {
+                //Pop up Game Over message propmting restart
+            }
         }
         else
         {
@@ -82,12 +112,20 @@ public class LevelManager : MonoBehaviour
 
     private void CheckPackage()
     {
-        if(_packagesLeft > 0 && CountObjectsWithTag("Package") == 0)
+        if (_packagesLeft == -1)
         {
-            activePackage = packages.Dequeue();
-            pg.SpawnPackage(activePackage);
+            EndDay();
+        }
+        else if (_packagesLeft >= 0 && CountObjectsWithTag("Package") == 0)
+        {
+            if (_packagesLeft !=0)
+            {
+                activePackage = packages.Dequeue();
+                pg.SpawnPackage(activePackage);
+            }
             _packagesLeft--;
         }
+
     }
     public int CountObjectsWithTag(string tag)
     {
@@ -97,14 +135,17 @@ public class LevelManager : MonoBehaviour
 
     public void EndDay()
     {
-        int day = 1;
+        int day = GameManager.Instance.currentDay;
         switch (day)
         {
             case 1:
+                GameManager.Instance.LoadLevel(2);
                 break;
             case 2:
+                GameManager.Instance.LoadLevel(3);
                 break;
-            case 3: 
+            case 3:
+                GameManager.Instance.LoadLevel(4);
                 break;
         }
     }
