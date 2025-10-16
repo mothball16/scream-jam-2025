@@ -6,11 +6,13 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using TMPro;
+using Assets.Scripts.Events;
 
 public enum ChatColors
 {
     Default,
-    Angry
+    Angry,
+    Disappointed
 }
 
 /// <summary>
@@ -21,7 +23,8 @@ public class UIManager : MonoBehaviour
     private static Dictionary<ChatColors, Color> _chatColors = new()
     {
         {ChatColors.Default, Color.white},
-        {ChatColors.Angry, Color.red }
+        {ChatColors.Angry, new Color(255/255f,100/255f,100/255f)},
+        {ChatColors.Disappointed, Color.yellow }
     };
 
 
@@ -30,12 +33,14 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Canvas _screen;
     private Transform _dialogueBox, _dialogueTemplate;
     private Text _state;
+    private Image _fade;
     private List<string> _citations;
     private void Awake()
     {
         _state = _screen.transform.Find("State").GetComponent<Text>();
         _dialogueBox = _screen.transform.Find("Dialogue");
         _dialogueTemplate = _dialogueBox.Find("Template");
+        _fade = _screen.transform.Find("FadePanel").GetComponent<Image>();
         _citations = new();
     }
     private void OnEnable()
@@ -44,7 +49,8 @@ public class UIManager : MonoBehaviour
         {
             EventBus.Subscribe<CorrectChoiceEvent>(OnCorrectChoice),
             EventBus.Subscribe<IncorrectChoiceEvent>(OnIncorrectChoice),
-            EventBus.Subscribe<RequestDialogueEvent>(OnRequestDialogue)
+            EventBus.Subscribe<RequestDialogueEvent>(OnRequestDialogue),
+            EventBus.Subscribe<FadeToEvent>(OnFadeTo),
         };
     }
 
@@ -83,6 +89,13 @@ public class UIManager : MonoBehaviour
                 if (temp != null && temp.gameObject != null)
                     Destroy(temp.gameObject);
             });
+    }
+
+    private void OnFadeTo(FadeToEvent e)
+    {
+        var fIn = e.Direction == FadeDirection.In;
+        _fade.color = e.FadeColor;
+        _fade.DOFade(fIn ? 1f : 0f, e.TweenTime).From(fIn ? 0f : 1f).SetEase(Ease.InCubic);
     }
 
     private void UpdateGameState()

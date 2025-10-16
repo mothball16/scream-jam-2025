@@ -1,4 +1,5 @@
-﻿using DG.Tweening;
+﻿using Assets.Scripts.Events;
+using DG.Tweening;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,7 +21,7 @@ namespace Assets.Scripts.Util
             EventBus.Publish(e);
         }
 
-        public static void TalkDeferred(RequestDialogueEvent e, float delay)
+        public static void TalkDeferred(float delay, RequestDialogueEvent e)
         {
             Defer(delay, () => {
                 EventBus.Publish(e);
@@ -30,6 +31,11 @@ namespace Assets.Scripts.Util
         public static void Defer(float delay, Action a)
         {
             DOVirtual.DelayedCall(delay * DelayMult, () => a());
+        }
+
+        public static void Fade(FadeToEvent e)
+        {
+            EventBus.Publish(e);
         }
     }
 }

@@ -6,6 +6,7 @@ using UnityEngine;
 using Random = UnityEngine.Random;
 using PAC = PackageAttributeConstraints;
 using Assets.Scripts.Util;
+using Assets.Scripts.Events;
 /// <summary>
 /// Handles the spawning of packages and the general game flow.
 /// </summary>
@@ -16,6 +17,7 @@ public class LevelManager : MonoBehaviour
     private List<IDisposable> _connections;
     private Package _activePackage;
     private GameObject _activePackageModel;
+    private bool _running;
     public int violations;
     public int maxViolations;
 
@@ -23,7 +25,7 @@ public class LevelManager : MonoBehaviour
     {
         if (GameManager.Inst == null)
         {
-            Utils.Talk(new("(SYSTEM) GameManager not initialized. Day one will work, but the rest won't."));
+            Utils.Talk(new("(SYSTEM) GameManager not initialized. Run from the bootstrapper idiot", Color: ChatColors.Angry));
             StartDay(Days.DayOne);
         }
         else
@@ -32,18 +34,20 @@ public class LevelManager : MonoBehaviour
 
     private void StartDay(Days day)
     {
+        Utils.Fade(new(Color.black, 1f, FadeDirection.Out));
+
         var pg = PackageGenerator.Inst;
         packages = new Queue<Package>();
         violations = 0;
         _packagesLeft = -2;
-
+        _running = true;
         switch (day)
         {
             case Days.DayOne:
                 maxViolations = 2;
                 //so we dont go to gameend during the dialogue sequence
                 Utils.Talk(new("*yawn* What up rookie."));
-                Utils.TalkDeferred(new("Welcome to your new job. Take a look around. <i>(MOUSE to look. A/D to turn.)</i>",3), 3);
+                Utils.TalkDeferred(3, new("Welcome to your new job. Take a look around. <i>(MOUSE to look. A/D to turn.)</i>",3));
                 Utils.Defer(6, () => {
                     Utils.Talk(new("Oh, and here's the first package. Check your manual to figure out what to do."));
                     packages.Enqueue(
@@ -61,15 +65,22 @@ public class LevelManager : MonoBehaviour
                                ? new("Good work. You're doing better than the last guy already.")
                                : new("...yikes... who the hell hired you?", Color: ChatColors.Angry)
                                );
+                           if (!accepted) GameManager.Inst.SetFlag(StoryFlags.FailedFirstPackage);
                        }));
-                    packages.Enqueue(new Package(false, pg.GenerateBadWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
+                    packages.Enqueue(new Package(false, 
+                        pg.GenerateBadWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day),
+                        pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper(),
+                        OnSpawnedCallback: (obj) =>
+                        {
+                            if (GameManager.Inst.GetFlag(StoryFlags.FailedFirstPackage))
+                                Utils.TalkDeferred(1, new("...Try not to mess up this one this time.", Color: ChatColors.Disappointed));
+                        }));
                     packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
                     packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
                     packages.Enqueue(new Package(false, pg.GenerateBadWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateBadRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
                     packages.Enqueue(new Package(false, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateBadShipper()));
                     _packagesLeft = packages.Count;
                 });
-               
                 break;
             case Days.DayTwo:
                 maxViolations = 1;
@@ -171,7 +182,10 @@ public class LevelManager : MonoBehaviour
 
     public void EndDay()
     {
+        if (!_running) return;
+        _running = false;
         Days day = GameManager.Inst.CurrentDay;
+
         switch (day)
         {
             case Days.DayOne:
