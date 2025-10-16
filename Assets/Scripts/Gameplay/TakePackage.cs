@@ -7,11 +7,11 @@ using UnityEngine.InputSystem;
 public class TakePackage : MonoBehaviour
 {
 
-    private void OnCollisionEnter(Collision col)
+    private void OnTriggerEnter(Collider col)
     {
-        if(col.gameObject.TryGetComponent<PackageInfo>(out var info))
+        if(col.gameObject.TryGetComponent<PackageInfo>(out var info) && !info.Processed)
         {
-            Destroy(info);
+            info.Processed = true;
             EventBus.Publish<DecisionMadeEvent>(new(true));
         }
     }

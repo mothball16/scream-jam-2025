@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using static UnityEngine.Rendering.VolumeComponent;
 
 public enum InteractionState
 {
@@ -43,6 +44,7 @@ public class InspectController : MonoBehaviour
         _inputActions.Player.Enable();
         _inputActions.Player.Attack.started += OnAction;
         _inputActions.Player.MoveHoldDistance.performed += OnScroll;
+        _inputActions.Player.Deny.started += OnDeny;
 
         ChangeState(InteractionState.Idle);
 
@@ -52,15 +54,13 @@ public class InspectController : MonoBehaviour
         };
     }
 
- 
-
-
-
     private void OnDisable()
     {
         _inputActions.Player.Disable();
         _inputActions.Player.Attack.started -= OnAction;
         _inputActions.Player.MoveHoldDistance.performed -= OnScroll;
+        _inputActions.Player.Deny.started -= OnDeny;
+
         ChangeState(InteractionState.Disabled);
 
         _disposables.ForEach(disposable => disposable.Dispose());
@@ -83,12 +83,8 @@ public class InspectController : MonoBehaviour
         {
             ChangeState(InteractionState.PackageRejected);
             // nobody gaf about the package anymore, so we dispose here
-            Destroy(_package, 0);
+           // Destroy(_package, 0); EDIT: centralize this to levelmanager
         }
-
-        // send package data over for validation
-        EventBus.Publish(
-            new PackageProcessedEvent(e.Accepted, _package.GetComponent<PackageInfo>()));
     }
 
     private void OnScroll(InputAction.CallbackContext ctx)
@@ -97,6 +93,10 @@ public class InspectController : MonoBehaviour
         _holdDist = Math.Clamp(_holdDist + scroll, _holdDistMin, _holdDistMax);
     }
 
+    private void OnDeny(InputAction.CallbackContext ctx)
+    {
+        EventBus.Publish<DecisionMadeEvent>(new(false));
+    }
 
     private void OnAction(InputAction.CallbackContext ctx)
     {
@@ -118,7 +118,7 @@ public class InspectController : MonoBehaviour
             {
                 Debug.DrawRay(ray.origin, ray.direction * info.distance, Color.green);
 
-                if (info.collider.gameObject.TryGetComponent<PackageInfo>(out var pkg))
+                if (info.collider.gameObject.TryGetComponent<PackageInfo>(out var pkg) && !pkg.Processed)
                 {
                     PickupPackage(info.collider.gameObject);
                 }
@@ -131,6 +131,7 @@ public class InspectController : MonoBehaviour
     /// </summary>
     private void DropPackage()
     {
+        if (_package == null) return;
         EventBus.Publish(new PackageDroppedEvent(_package));
         EventBus.Publish(new ChangeCameraLookerTargetEvent(null));
 
@@ -175,6 +176,12 @@ public class InspectController : MonoBehaviour
                 ChangeState(InteractionState.Idle);
                 rigidbody.AddForce(Camera.main.transform.forward.normalized * 5000, ForceMode.Force);
                 break;
+            case InteractionState.PackageAccepted:
+                //this was intended to be a state with lifetime but changes were made
+                //no point in cleaning up architecture 12hrs before the submission deadline tho lol
+                DropPackage();
+                ChangeState(InteractionState.Idle);
+                break;
         }
     }
 
@@ -191,6 +198,7 @@ public class InspectController : MonoBehaviour
                 rigidbody.linearVelocity = Vector3.zero;
                 rigidbody.MovePosition(Vector3.Lerp(_package.transform.position, Camera.main.transform.position + Camera.main.transform.forward.normalized * _holdDist, 0.05f * _lerpSpeed));
                 break;
+                /*
             case InteractionState.PackageAccepted:
                 rigidbody.MovePosition(Vector3.Lerp(_package.transform.position, _releaseSpot.position, 0.1f * _lerpSpeed));
                 if (_stateTime > 1)
@@ -199,7 +207,7 @@ public class InspectController : MonoBehaviour
                     DropPackage();
                     ChangeState(InteractionState.Idle);
                 }
-                break;
+                break;*/
         }
     }
 }
