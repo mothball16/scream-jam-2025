@@ -14,7 +14,7 @@ namespace Assets.Scripts.Util
     /// </summary>
     internal static class Utils
     {
-        private const float DelayMult = 0.5f;
+        private const float DelayMult = 1;
 
         public static void Talk(RequestDialogueEvent e)
         {

@@ -47,9 +47,12 @@ public class LevelManager : MonoBehaviour
                 maxViolations = 2;
                 //so we dont go to gameend during the dialogue sequence
                 Utils.Talk(new("*yawn* What up rookie."));
-                Utils.TalkDeferred(3, new("Welcome to your new job. Take a look around. <i>(MOUSE to look. A/D to turn.)</i>",3));
+                Utils.Defer(3, () => {
+                    Utils.Talk(new("Welcome to your new job. Take a look around. <i>(MOUSE to look. A/D to turn.)</i>", 3));
+                });
                 Utils.Defer(6, () => {
                     Utils.Talk(new("Oh, and here's the first package. Check your manual to figure out what to do."));
+                    Utils.TalkDeferred(1, new("<i>F to pull up the manual.</i>"));
                     packages.Enqueue(
                        new Package(true,
                        pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day),
@@ -67,7 +70,7 @@ public class LevelManager : MonoBehaviour
                                );
                            if (!accepted) GameManager.Inst.SetFlag(StoryFlags.FailedFirstPackage);
                        }));
-                    packages.Enqueue(new Package(false, 
+                    packages.Enqueue(new Package(false,
                         pg.GenerateBadWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day),
                         pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper(),
                         OnSpawnedCallback: (obj) =>
@@ -84,13 +87,19 @@ public class LevelManager : MonoBehaviour
                 break;
             case Days.DayTwo:
                 maxViolations = 1;
-                packages.Enqueue(new Package(false, pg.GenerateBadWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
-                packages.Enqueue(new Package(false, pg.GenerateGoodWeightPair(), pg.GenerateBadRegionAddress(day), pg.GenerateBadZipAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
-                packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
-                packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
-                packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
-                packages.Enqueue(new Package(false, pg.GenerateBadWeightPair(), pg.GenerateBadZipAddress(day), pg.GenerateBadRegionAddress(day), pg.GetBadDate(day).ToString(), pg.GenerateBadRemark(), pg.GenerateID(), pg.GenerateBadShipper()));
-                _packagesLeft = packages.Count;
+                Utils.Talk(new("...You seen the news today?", Color: ChatColors.Angry));
+                Utils.Defer(3, () =>
+                {
+                    Utils.Talk(new("<i>You messed up. Bad.</i>", Color: ChatColors.Angry));
+                    packages.Enqueue(new Package(false, pg.GenerateBadWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
+                    packages.Enqueue(new Package(false, pg.GenerateGoodWeightPair(), pg.GenerateBadRegionAddress(day), pg.GenerateBadZipAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
+                    packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
+                    packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
+                    packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
+                    packages.Enqueue(new Package(false, pg.GenerateBadWeightPair(), pg.GenerateBadZipAddress(day), pg.GenerateBadRegionAddress(day), pg.GetBadDate(day).ToString(), pg.GenerateBadRemark(), pg.GenerateID(), pg.GenerateBadShipper()));
+                    _packagesLeft = packages.Count;
+                });
+                
                 break;
             case Days.DayThree:
                 maxViolations = 0;
