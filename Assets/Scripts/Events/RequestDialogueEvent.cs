@@ -1,0 +1,1 @@
+public record RequestDialogueEvent(string msg, float time);
