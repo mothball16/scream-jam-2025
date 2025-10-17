@@ -34,7 +34,7 @@ public class LevelManager : MonoBehaviour
             StartDay(Days.DayOne);
         }
         else
-            StartDay(Days.DayTwo);
+            StartDay(Days.DayOne);
     }
 
     private void StartDay(Days day)
@@ -302,7 +302,18 @@ public class LevelManager : MonoBehaviour
         switch (day)
         {
             case Days.DayOne:
-                Utils.Defer(10,() => GameManager.Inst.LoadLevel(Days.DayTwo));
+                Utils.Fade(new(Color.black, 2));
+                Utils.Talk(new("(You finish your first day without incident.)"));
+                Utils.TalkDeferred(2, new("(You arrive home, eat a microwaved dinner, and lay on the bed for a nap.)"));
+                Utils.TalkDeferred(4, new("(Maybe.. scanning packages all day isn't so bad.)"));
+                Utils.TalkDeferred(7, new("* BOOM * ", 5, ChatColors.Angry));
+                Utils.TalkDeferred(10, new("(Screams can be heard from the adjacent house to you. You rush out to investigate.)"));
+                Utils.TalkDeferred(12, new("(Was it a gas leak? A firecracker? No... it doesn't appear to be either.)"));
+                Utils.TalkDeferred(14, new("Looking out on the street, your eyes are drawn to a truck. A delivery truck.)"));
+                Utils.TalkDeferred(16, new("(...and the gored remains of the mailman)"));
+                Utils.TalkDeferred(18, new("(...who only seconds ago had been routinely delivering a package to your neighbors.)"));
+                Utils.TalkDeferred(20, new("(You may not be the brightest, but even a dim bulb can put together two and two.)", 4));
+                Utils.Defer(24,() => GameManager.Inst.LoadLevel(Days.DayTwo));
                 break;
             case Days.DayTwo:
                 GameManager.Inst.LoadLevel(Days.DayThree);
