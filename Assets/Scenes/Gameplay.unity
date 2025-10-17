@@ -1387,6 +1387,10 @@ PrefabInstance:
       propertyPath: '_targets.Array.data[2]'
       value: 
       objectReference: {fileID: 369456871}
+    - target: {fileID: 1546242418772759276, guid: f8350c46cfb9c3d4587d63cee82e642b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 1784986229995032142, guid: f8350c46cfb9c3d4587d63cee82e642b, type: 3}
       propertyPath: m_LocalPosition.x
       value: 378.75043
@@ -1543,6 +1547,10 @@ PrefabInstance:
       propertyPath: m_ReferenceResolution.y
       value: 1080
       objectReference: {fileID: 0}
+    - target: {fileID: 6548948314111360238, guid: f8350c46cfb9c3d4587d63cee82e642b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6655716513234049020, guid: f8350c46cfb9c3d4587d63cee82e642b, type: 3}
       propertyPath: _manualPages.Array.size
       value: 3
@@ -1579,6 +1587,10 @@ PrefabInstance:
       propertyPath: pg
       value: 
       objectReference: {fileID: 650875914}
+    - target: {fileID: 8520522604757729367, guid: f8350c46cfb9c3d4587d63cee82e642b, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8624396857870476889, guid: f8350c46cfb9c3d4587d63cee82e642b, type: 3}
       propertyPath: m_Name
       value: Dialogue
@@ -1632,13 +1644,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1486121563}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: -0, y: -0.70710677, z: -0, w: 0.7071068}
   m_LocalPosition: {x: -0.27669904, y: 1.1159525, z: -0.13010049}
   m_LocalScale: {x: 0.07920094, y: 2, z: 0.47586906}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 19853354}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
 --- !u!1001 &1563645203
 PrefabInstance:
   m_ObjectHideFlags: 0
