@@ -1,3 +1,4 @@
+using Assets.Scripts.Events;
 using System;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -95,12 +96,13 @@ public class InspectController : MonoBehaviour
 
     private void OnDeny(InputAction.CallbackContext ctx)
     {
+        if (_state != InteractionState.InspectingPackage) return;
         EventBus.Publish<DecisionMadeEvent>(new(false));
     }
 
     private void OnAction(InputAction.CallbackContext ctx)
     {
-        if (!GameManager.Inst.GetFlag(StoryFlags.EnablePickup)) { return; }
+        if (!GameManager.Inst.GetFlag(StoryFlags.EnablePickup)) return;
         if (_state == InteractionState.InspectingPackage)
         {
             DropPackage();
@@ -122,6 +124,9 @@ public class InspectController : MonoBehaviour
                 if (info.collider.gameObject.TryGetComponent<PackageInfo>(out var pkg) && !pkg.Processed)
                 {
                     PickupPackage(info.collider.gameObject);
+                } else if(info.collider.gameObject.TryGetComponent<Telephone>(out var telly))
+                {
+                    EventBus.Publish<TelephonePickupEvent>(new());
                 }
             }
         }
