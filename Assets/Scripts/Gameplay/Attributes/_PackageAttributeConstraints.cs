@@ -11,7 +11,7 @@ public static class PackageAttributeConstraints
 
     // shipper
     public static readonly string[] ValidShippers = new[] { "Amazon", "WeBay", "Fexed" };
-    public static readonly string[] InvalidShippers = new[] { "AmazonFake", "WeBayFake", "WeBayFake2", "FexedFake" };
+    public static readonly string[] InvalidShippers = new[] { "AmazonFake", "WeBayFake" };
     public const double ShipperForgedBaseChance = 0.2;
 
     // shipTo and from
@@ -33,9 +33,9 @@ public static class PackageAttributeConstraints
     "Vista", "View", "Lookout", "Point", "Harbor", "Bay", "Cove", "Shore",
     "Island", "Harborview", "Seaside", "Ocean" };
     public static readonly string[] AddressLineOneEnd = new[] {"St", "Rd", "Ave", "Blvd", "Ln", "Dr", "Ct", "Pl", "Cir", "Way" };
-    public static readonly string[] Regions = new[] { "West Market", "East Industrial", "South Quarry", "North Settlement", "Old Port City" };
+    public static readonly string[] Regions = new[] { "West Market", "East Industrial", "North Settlement", "South Quarry", "Old Port City" };
     public static readonly string[] BannedRegionOnSecondDay = new[] { "Old Port City" };
-    public static readonly string[] BannedRegionsOnThirdDay = new[] { "Old Port City", "North Settlement" };
+    public static readonly string[] BannedRegionsOnThirdDay = new[] { "Old Port City"};
     public const double InvalidZIPCodeBaseChance = 0.1; // first number of zipcode must align with the index of the region, other 4 are irrelevant
 
     // date
@@ -94,5 +94,10 @@ public static class PackageAttributeConstraints
     };
     public const double ThreateningRemarkBaseChance = 0.08;
 
-
+    public static readonly string[] amazonGood = new[] { "13579", "97531", "113355", "579", "7331", "911", "157", "33333", "975", "7777" };
+    public static readonly string[] amazonBad = new[] { "24680", "135792", "8080", "113354", "429", "10203", "6017", "2201", "8642", "1112" };
+    public static readonly string[] weBayGood = new[] { "A1B2C3D4E5F6", "ABCDEF123456", "1A2B3C4D5E6F", "W3E4B5A6Y7Z8", "Z9X8C7V6B5N4", "M1N2B3V4C5X6", "R3T2Y5U6I7O8", "A9S8D7F6G5H4", "Q1W2E3R4T5Y6", "123ABC456DEF" };
+    public static readonly string[] weBayBad = new[] { "ABC123", "123456789012", "AABBCCDDEEFF", "1A2B3C4D5E", "ABC123456", "A1B2C3D4E5F", "1A2B3C4D5E6G7", "A1B2C3D4E5F6G", "A1B2C3D4E5F5G6", "12345ABCDE" };
+    public static readonly string[] fexedGood = new[] { "1234", "A5674", "FEDEX4", "9876543214", "ZXCVMNB4", "IDNUM4", "SHIPIT4", "A1B2C3D4", "000000004", "TRK9999999994" };
+    public static readonly string[] fexedBad = new[] { "1235", "A5670", "FEDEX3", "9876543219", "ZXCVMNB7", "IDNUM2", "SHIPIT0", "A1B2C3D9", "000000001", "TRK9999999997" };
 }

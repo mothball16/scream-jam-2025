@@ -7,12 +7,14 @@ using Random = UnityEngine.Random;
 using PAC = PackageAttributeConstraints;
 using static UnityEngine.Analytics.IAnalytic;
 using Assets.Scripts.Util;
+using System.Linq;
 /// <summary>
 /// The purpose of this script is to create the packages and set up a way to order/script the packages on days
 /// 
 /// </summary>
 public class PackageGenerator : MonoSingleton<PackageGenerator>
 {
+    public string shipper;
     [SerializeField] private Transform _spawn;
     public GameObject[] _packages;
 
@@ -64,7 +66,6 @@ public class PackageGenerator : MonoSingleton<PackageGenerator>
 
     public string GenerateGoodShipper()
     {
-        string shipper;
         int index;
         index = Random.Range(0, PAC.ValidShippers.Length);
         shipper = PAC.ValidShippers[index];
@@ -73,7 +74,6 @@ public class PackageGenerator : MonoSingleton<PackageGenerator>
 
     public string GenerateBadShipper()
     {
-        string shipper;
         int index;
         index = Random.Range(0, PAC.InvalidShippers.Length);
         shipper = PAC.InvalidShippers[index];
@@ -94,7 +94,7 @@ public class PackageGenerator : MonoSingleton<PackageGenerator>
             _ => 0,
         };
         address += PAC.Regions[regionIndex] + " ";
-        address += Random.Range((regionIndex + 1) * 10000, (regionIndex + 2) * 10000);
+        address += Random.Range((regionIndex) * 10000, (regionIndex + 1) * 10000);
         return address;
     }
     public string GenerateBadZipAddress(Days day)
@@ -111,7 +111,7 @@ public class PackageGenerator : MonoSingleton<PackageGenerator>
             _ => 0,
         };
         address += PAC.Regions[regionIndex] + " ";
-        address += Random.Range((regionIndex + 2) * 10000, (regionIndex + 5) * 10000);
+        address += Random.Range((regionIndex + 1) * 10000, (regionIndex + 5) * 10000);
         return address;
     }
 
@@ -150,18 +150,82 @@ public class PackageGenerator : MonoSingleton<PackageGenerator>
     public string GenerateGoodRemark()
     {
         int index = Random.Range(0, PAC.UselessRemarks.Length);
-        return PAC.UselessRemarks[index];
+        string remark = ""; 
+        if (GameManager.Inst.CurrentDay == Days.DayThree)
+        {
+            remark = PAC.UselessRemarks[index] + GeneratePhoneNumber();
+        }
+        else
+        {
+            remark = PAC.UselessRemarks[index];
+        }
+        return remark;
     }
 
     public string GenerateBadRemark()
     {
         int index = Random.Range(0, PAC.ThreateningRemarks.Length);
-        return PAC.ThreateningRemarks[index];
+        string remark = "";
+        if (GameManager.Inst.CurrentDay == Days.DayThree)
+        {
+            remark = PAC.ThreateningRemarks[index] + GeneratePhoneNumber();
+        }
+        else
+        {
+            remark = PAC.ThreateningRemarks[index];
+        }
+        return remark;
     }
 
-    public int GenerateID()
+    public string GenerateGoodID()
     {
-        return Random.Range(1000000, 10000000);
+        int index = Random.Range(0, 10);
+        string id;
+        switch(shipper)
+        {
+            case ("Amazon"):
+                id = PAC.amazonGood[index];
+                break;
+            case ("WeBay"):
+                id = PAC.weBayGood[index];
+                break;
+            case ("Fexed"):
+                id = PAC.fexedGood[index];
+                break;
+            default:
+                id = "" + Math.PI ;
+                break;
+        }
+        return id;
+    }
+
+    public string GenerateBadID()
+    {
+        int index = Random.Range(0, 10);
+        string id;
+        switch (shipper)
+        {
+            case ("Amazon"):
+                id = PAC.amazonBad[index];
+                break;
+            case ("WeBay"):
+                id = PAC.weBayBad[index];
+                break;
+            case ("Fexed"):
+                id = PAC.fexedBad[index];
+                break;
+            default:
+                id = "" + Math.PI;
+                break;
+        }
+        return id;
+    }
+
+    public string GeneratePhoneNumber()
+    {
+        string phoneNumber;
+        phoneNumber = " " + Random.Range(100, 1000) + "-" + Random.Range(1000,10000);
+        return phoneNumber;
     }
 
 }

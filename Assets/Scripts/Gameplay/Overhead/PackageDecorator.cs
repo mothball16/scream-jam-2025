@@ -85,6 +85,7 @@ public class PackageDecorator : MonoBehaviour
             var label = canvas.transform.Find(kvp.Key.Name);
             if (label != null)
             {
+                Debug.Log(kvp.Value);
                 RenderLabel(label, kvp.Value);
             } else
             {
