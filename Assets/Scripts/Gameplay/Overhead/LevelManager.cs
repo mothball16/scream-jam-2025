@@ -94,8 +94,6 @@ public class LevelManager : MonoBehaviour
                             {
                                 Utils.TalkDeferred(3, new("...Try not to mess up this time.", Color: ChatColors.Disappointed));
                             }
-                                
-                        
                         },
                        OnProcessedCallback: (obj, accepted) => {
                            Utils.Talk(!accepted
