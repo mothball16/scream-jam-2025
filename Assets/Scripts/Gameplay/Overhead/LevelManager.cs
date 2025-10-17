@@ -48,20 +48,27 @@ public class LevelManager : MonoBehaviour
                 //so we dont go to gameend during the dialogue sequence
                 Utils.Talk(new("*yawn* What up rookie."));
                 Utils.Defer(3, () => {
-                    Utils.Talk(new("Welcome to your new job. Take a look around. <i>(MOUSE to look. A/D to turn.)</i>", 3));
+                    Utils.Talk(new("Welcome to your new job! Take a look around. <i>(MOUSE to look. A/D to turn.)</i>", 3));
                 });
                 Utils.Defer(6, () => {
-                    Utils.Talk(new("Oh, and here's the first package. Check your manual to figure out what to do."));
-                    Utils.TalkDeferred(1, new("<i>F to pull up the manual.</i>"));
+                    Utils.TalkDeferred(3, new("Your responsibility is to examine these packages, tossing out sketchy ones."));
+                    Utils.TalkDeferred(8, new("You have a scale and a manual to get started"));
+                    Utils.TalkDeferred(12, new("<i>F to pull up the manual.</i>"));
                     packages.Enqueue(
                        new Package(true,
                        pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day),
                        pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper(),
                        OnSpawnedCallback: (obj) =>
                        {
-                           Utils.Talk(new("test, making sure OnSpawnedCallback works"));
+                           Utils.Talk(new("Oh, and here's the first package."));
+                           Utils.TalkDeferred(18, new("Take your time before you make your decision"));
+                           Utils.TalkDeferred(21, new("You DON'T want to make the wrong one", Color: ChatColors.Angry));
+                           Utils.TalkDeferred(24, new("btw use your mouse to examine"));
+                           Utils.Defer(24, () =>  GameManager.Inst.SetFlag(StoryFlags.EnablePickup) );
+                           Utils.TalkDeferred(30, new("Approve by placing the package on the next conveyer otherwise, deny with E"));
+                           //Utils.Talk(new("test, making sure OnSpawnedCallback works"));
                            //this puts the package ontop of the conveyor window lol
-                           obj.transform.position += new Vector3(0, 5, 0);
+                           obj.transform.position += new Vector3(0, 0, 0);
                        },
                        OnProcessedCallback: (obj, accepted) => {
                            Utils.Talk(accepted
@@ -76,9 +83,28 @@ public class LevelManager : MonoBehaviour
                         OnSpawnedCallback: (obj) =>
                         {
                             if (GameManager.Inst.GetFlag(StoryFlags.FailedFirstPackage))
-                                Utils.TalkDeferred(1, new("...Try not to mess up this one this time.", Color: ChatColors.Disappointed));
+                            {
+                                Utils.TalkDeferred(3, new("...Try not to mess up this time.", Color: ChatColors.Disappointed));
+                            }
+                                
+                        
+                        },
+                       OnProcessedCallback: (obj, accepted) => {
+                           Utils.Talk(!accepted
+                               ? new("Nice job using your scale.")
+                               : new("how'd you miss the check of the only other action you have.", Color: ChatColors.Disappointed)
+                               );
+                           if (!accepted) GameManager.Inst.SetFlag(StoryFlags.FailedFirstPackage);
+                       }));
+                    Debug.Log(packages.Peek().WeightPair);
+                    packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper(),
+                        OnSpawnedCallback: (obj) =>
+                        {
+                            Utils.TalkDeferred(3, new("listen pal,"));
+                            Utils.TalkDeferred(5, new("just stay focused and you'll be fine."));
+                            Utils.TalkDeferred(8, new("I'll check in with ya tomorrow. *click*"));
+
                         }));
-                    packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
                     packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
                     packages.Enqueue(new Package(false, pg.GenerateBadWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateBadRemark(), pg.GenerateID(), pg.GenerateGoodShipper()));
                     packages.Enqueue(new Package(false, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateID(), pg.GenerateBadShipper()));
