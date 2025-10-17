@@ -50,7 +50,6 @@ public class LevelManager : MonoBehaviour
         switch (day)
         {
             case Days.DayOne:
-                Utils.Defer(2, () => GameManager.Inst.SetFlag(StoryFlags.EnablePickup));
                 maxViolations = 2;
                 _availablePages = 2;
                 //so we dont go to gameend during the dialogue sequence
