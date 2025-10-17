@@ -8,6 +8,7 @@ using PAC = PackageAttributeConstraints;
 using Assets.Scripts.Util;
 using Assets.Scripts.Events;
 using DG.Tweening;
+using System.Threading.Tasks;
 /// <summary>
 /// Handles the spawning of packages and the general game flow.
 /// </summary>
@@ -28,7 +29,7 @@ public class LevelManager : MonoBehaviour
 
     void Start()
     {
-        GameManager.Inst.CurrentDay = Days.DayTwo;
+        GameManager.Inst.CurrentDay = Days.DayThree;
         if (GameManager.Inst == null)
         {
             Utils.Talk(new("(SYSTEM) GameManager not initialized. Run from the bootstrapper idiot", Color: ChatColors.Angry));
@@ -136,13 +137,12 @@ public class LevelManager : MonoBehaviour
                 Utils.Defer(3, () =>
                 {
                     Utils.TalkDeferred(4, new("A delivery driver's van got blown up"));
-                    Utils.TalkDeferred(7, new("and the"));
-                    Utils.TalkDeferred(10, new("SOMEONE made a mistake and let an explosive get through. ", Color: ChatColors.Angry));
-                    Utils.TalkDeferred(13, new("Does that someone sound familiar to you?"));
-                    Utils.TalkDeferred(21, new("Oh shoot one last thing,"));
-                    Utils.TalkDeferred(24, new("You probably already noticed but theres an extra page on the manual this time"));
-                    Utils.TalkDeferred(26, new("and yes that means more work for us"));
-                    Utils.TalkDeferred(28, new("so keep your eye on those labels."));
+                    Utils.TalkDeferred(8, new("SOMEONE made a mistake and let an explosive get through. ", Color: ChatColors.Angry));
+                    Utils.TalkDeferred(11, new("Does that someone sound familiar to you?"));
+                    Utils.TalkDeferred(14, new("*sigh* Whatever. Don't let it happen twice, cause every time it happens,"));
+                    Utils.TalkDeferred(23, new("we get more paperwork to deal with."));
+                    Utils.TalkDeferred(27, new("See that manual? There's a second page on it now. Thanks to you."));
+                    Utils.TalkDeferred(31, new("So make sure you're checking those too."));
                     packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateGoodShipper(), pg.GenerateGoodID()));
                     packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateGoodShipper(), pg.GenerateGoodID()));
                     packages.Enqueue(new Package(false, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateGoodShipper(), pg.GenerateBadID()));
@@ -156,15 +156,63 @@ public class LevelManager : MonoBehaviour
                 break;
             case Days.DayThree:
                 GameManager.Inst.SetFlag(StoryFlags.EnablePickup);
-                maxViolations = 0;
-                packages.Enqueue(new Package(false, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateGoodShipper(), pg.GenerateBadID()));
+                maxViolations = 1;
+                _availablePages = 4;
+
+                Utils.Talk(new("<i>Bomberman!</i> How's it going?"));
+                Utils.TalkDeferred(4, new("..Just joking. God. Whatever"));
+                Utils.TalkDeferred(8, new("Anyways, I'm calling in sick today. And probably till this whole bomb thing"));
+                Utils.TalkDeferred(12, new("boils over. I'm seeing things, man.. I swear there's someone looking at me,"));
+                Utils.TalkDeferred(15, new("right through the window."));
+                Utils.TalkDeferred(19, new("So, you're on your own! Don't forget to read the third page of the manual."));
+
+                packages.Enqueue(new Package(
+                    false, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), "<b>Pick up the phone. It is in your best interest to so do.</b>", pg.GenerateGoodShipper(), pg.GenerateGoodID(),
+                    OnTelephonePickedUpCallback: (obj, first) =>
+                    {
+                        if (!first) return;
+                        GameManager.Inst.SetFlag(StoryFlags.AcknowledgedBombPackage);
+                        Utils.Talk(new("Inspector... inspector. I've been giving you a <i>rough</i> time recently, huh?", Color: ChatColors.Angry));
+                        Utils.TalkDeferred(4, new("But worry not. You're in for a surprise today; make sure you take it well.", Color: ChatColors.Angry));
+                        Utils.TalkDeferred(7, new("No hard feelings", Color: ChatColors.Angry));
+                    },
+                    OnProcessedCallback: (obj, accepted) =>
+                    {
+                        if (!GameManager.Inst.GetFlag(StoryFlags.AcknowledgedBombPackage))
+                        {
+                            GameManager.Inst.SetFlag(StoryFlags.AcknowledgedBombPackage);
+                            Utils.Talk(new("*loudspeaker buzz*", Color: ChatColors.Angry));
+                            Utils.TalkDeferred(3, new("Inspector... inspector. I've been giving you a <i>rough</i> time recently, huh?", Color: ChatColors.Angry));
+                            Utils.TalkDeferred(7, new("But worry not. You're in for a surprise today; make sure you take it well.", Color: ChatColors.Angry));
+                            Utils.TalkDeferred(11, new("No hard feelings", Color: ChatColors.Angry));
+                        }
+                    }));
                 packages.Enqueue(new Package(false, pg.GenerateBadWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateGoodShipper(), pg.GenerateGoodID()));
                 packages.Enqueue(new Package(false, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetBadDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateGoodShipper(), pg.GenerateGoodID()));
                 packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateGoodShipper(), pg.GenerateGoodID()));
                 packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateGoodShipper(), pg.GenerateGoodID()));
                 packages.Enqueue(new Package(false, pg.GenerateGoodWeightPair(), pg.GenerateBadZipAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateGoodShipper(), pg.GenerateGoodID()));
-                packages.Enqueue(new Package(false, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateBadRegionAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateGoodShipper(), pg.GenerateGoodID()));
-                packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateGoodShipper(), pg.GenerateGoodID()));
+                packages.Enqueue(new Package(false, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateBadRegionAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateGoodShipper(), pg.GenerateGoodID(), 
+                    OnPickedUpCallback: (obj, first) => {
+                        var info = obj.GetComponent<PackageInfo>();
+                        info.Processed = true;
+
+                        if (!first) return;
+                        Utils.Talk(new("*ring ring*", Color: ChatColors.Feds));
+                        Utils.TalkDeferred(3, new("This is Agent John from the FBI speaking.", Color: ChatColors.Feds));
+                        Utils.TalkDeferred(6, new("I see you have a problem on your hands.", Color: ChatColors.Feds));
+                        Utils.TalkDeferred(9, new("Fear not, there's an old manual we have lying around", Color: ChatColors.Feds));
+                        Utils.TalkDeferred(12, new("that may be helpful for this situation.", Color: ChatColors.Feds));
+                        Utils.TalkDeferred(15, new("Problem is, I don't know which manual it is.", Color: ChatColors.Feds));
+                        Utils.TalkDeferred(18, new("But whatever you do.. DO NOT throw it away or send it through the conveyor.", Color: ChatColors.Feds));
+                        Utils.TalkDeferred(21, new("The machinery here could easily pay for your bloodline five times over.", Color: ChatColors.Feds));
+                        Utils.TalkDeferred(24, new("*kachunk* Anyways, I've faxed you the defusal guide. Seems like", Color: ChatColors.Feds));
+                        Utils.TalkDeferred(27, new("you'll need to cut a wire -- just, I don't know which wire that'd be.", Color: ChatColors.Feds));
+                        Utils.TalkDeferred(30, new("Either you figure it out", Color: ChatColors.Feds));
+                        Utils.Defer(30, () => _availablePages = 5);
+                        Utils.TalkDeferred(33, new("or you won't need to worry about figuring it out anymore.", Color: ChatColors.Feds));
+                        Utils.TalkDeferred(36, new("By the way, there's like a minute left till that detonates. Have fun", Color: ChatColors.Feds));
+                    }));
 
                 _packagesLeft = packages.Count;
                 break;

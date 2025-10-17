@@ -13,7 +13,8 @@ public enum ChatColors
 {
     Default,
     Angry,
-    Disappointed
+    Disappointed,
+    Feds,
 }
 
 /// <summary>
@@ -25,7 +26,8 @@ public class UIManager : MonoBehaviour
     {
         {ChatColors.Default, Color.white},
         {ChatColors.Angry, new Color(255/255f,100/255f,100/255f)},
-        {ChatColors.Disappointed, Color.yellow }
+        {ChatColors.Disappointed, Color.yellow },
+        {ChatColors.Feds, Color.cyan},
     };
 
 
