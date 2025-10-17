@@ -141,7 +141,7 @@ public class PackageGenerator : MonoSingleton<PackageGenerator>
         int deviation = 0;
         while(deviation == 0)
         {
-            deviation = Random.Range(-PAC.DateDeviationFromCurrent, PAC.DateDeviationFromCurrent+1);
+            deviation = Random.Range(-1, -PAC.DateDeviationFromCurrent);
         }
         return (int)day + deviation + PAC.DayOneDate;
         

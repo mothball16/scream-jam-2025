@@ -176,6 +176,14 @@ public class InspectController : MonoBehaviour
         _stateTime += Time.deltaTime;
         switch (_state)
         {
+            case InteractionState.InspectingPackage:
+                if (_package.GetComponent<PackageInfo>().Processed)
+                {
+                    DropPackage();
+                    ChangeState(InteractionState.Idle);
+
+                }
+                break;
             case InteractionState.PackageRejected:
                 // instantly release and switch back to idle
                 DropPackage();
