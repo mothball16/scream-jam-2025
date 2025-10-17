@@ -306,7 +306,10 @@ public class LevelManager : MonoBehaviour
                 Utils.Talk(new("(You finish your first day without incident.)"));
                 Utils.TalkDeferred(2, new("(You arrive home, eat a microwaved dinner, and lay on the bed for a nap.)"));
                 Utils.TalkDeferred(4, new("(Maybe.. scanning packages all day isn't so bad.)"));
-                Utils.TalkDeferred(7, new("* BOOM * ", 5, ChatColors.Angry));
+
+                //BOOM happens here
+                Utils.Fade(new(Color.gray, 0.1f));
+                Utils.Fade(new(Color.black, 1));
                 Utils.TalkDeferred(10, new("(Screams can be heard from the adjacent house to you. You rush out to investigate.)"));
                 Utils.TalkDeferred(12, new("(Was it a gas leak? A firecracker? No... it doesn't appear to be either.)"));
                 Utils.TalkDeferred(14, new("Looking out on the street, your eyes are drawn to a truck. A delivery truck.)"));
@@ -316,6 +319,15 @@ public class LevelManager : MonoBehaviour
                 Utils.Defer(24,() => GameManager.Inst.LoadLevel(Days.DayTwo));
                 break;
             case Days.DayTwo:
+                Utils.Fade(new(Color.black, 2));
+                Utils.Talk(new("(Day two goes by. Work is getting... stressful.)"));
+                Utils.TalkDeferred(3, new("(Rumors of the bomber are the talk of the town.)"));
+                Utils.TalkDeferred(6, new("(Local news outlets are rushing to grasp at any straw they can find.)"));
+                Utils.TalkDeferred(9, new("(Including you, the new inspector who conveniently let a bomb through on day one.)"));
+                Utils.TalkDeferred(12, new("(Tired of the slander, you reach for the remote to turn off the television.)"));
+                // BOOM happens here.
+                Utils.TalkDeferred(15, new("stuff"));
+
                 GameManager.Inst.LoadLevel(Days.DayThree);
                 break;
             case Days.DayThree:
