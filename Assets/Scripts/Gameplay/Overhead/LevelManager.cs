@@ -30,7 +30,7 @@ public class LevelManager : MonoBehaviour
 
     void Start()
     {
-        GameManager.Inst.CurrentDay = Days.DayThree;
+       // GameManager.Inst.CurrentDay = Days.DayThree;
         if (GameManager.Inst == null)
         {
             Utils.Talk(new("(SYSTEM) GameManager not initialized. Run from the bootstrapper idiot", Color: ChatColors.Angry));
@@ -75,9 +75,13 @@ public class LevelManager : MonoBehaviour
                            Utils.Talk(new("Oh, and here's the first package."));
                            Utils.TalkDeferred(18, new("Take your time before you make your decision"));
                            Utils.TalkDeferred(21, new("You DON'T want to make the wrong one", Color: ChatColors.Angry));
-                           Utils.TalkDeferred(24, new("btw use your mouse to examine"));
-                           Utils.Defer(24, () =>  GameManager.Inst.SetFlag(StoryFlags.EnablePickup) );
-                           Utils.TalkDeferred(30, new("Approve by placing the package on the next conveyer otherwise, deny with E"));
+                           Utils.TalkDeferred(24, new("...Well, let's get started then. Pick up the package (LMB)."));
+                           Utils.Defer(24, () => GameManager.Inst.SetFlag(StoryFlags.EnablePickup));
+                           Utils.TalkDeferred(27, new("Too far? Too blurry? Scroll to bring closer/further, and RMB to zoom in."));
+                           Utils.TalkDeferred(30, new("To accept, bring the package to the right-side conveyor."));
+                           Utils.TalkDeferred(32, new("(Package may get stuck. Just reposition it)"));
+
+                           Utils.TalkDeferred(35, new("To deny, toss the package (E)."));
                            //Utils.Talk(new("test, making sure OnSpawnedCallback works"));
                            //this puts the package ontop of the conveyor window lol
                            obj.transform.position += new Vector3(0, 0, 0);
@@ -121,8 +125,8 @@ public class LevelManager : MonoBehaviour
                         OnProcessedCallback: (obj, accepted) =>
                         {
                             Utils.Talk(!accepted
-                                ? new("Nice catch")
-                                : new("Be sure to check that sender and ", Color: ChatColors.Disappointed)
+                                ? new("Nice catch. Or maybe you didn't catch it and got lucky. Whatever.")
+                                : new("Be sure to check that sender.", Color: ChatColors.Disappointed)
                                 );
                             if (!accepted) GameManager.Inst.SetFlag(StoryFlags.FailedFirstPackage);
                         }));
@@ -162,10 +166,7 @@ public class LevelManager : MonoBehaviour
 
                 Utils.Talk(new("<i>Bomberman!</i> How's it going?"));
                 Utils.TalkDeferred(4, new("..Just joking. God. Whatever"));
-                Utils.TalkDeferred(8, new("Anyways, I'm calling in sick today. And probably till this whole bomb thing"));
-                Utils.TalkDeferred(12, new("boils over. I'm seeing things, man.. I swear there's someone looking at me,"));
-                Utils.TalkDeferred(15, new("right through the window."));
-                Utils.TalkDeferred(19, new("So, you're on your own! Don't forget to read the third page of the manual."));
+                Utils.TalkDeferred(8, new("anyways, I quit, so you're on your own! Good luck buddy."));
 
                 packages.Enqueue(new Package(
                     false, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), "<b>Pick up the phone. It is in your best interest to so do.</b>", pg.GenerateGoodShipper(), pg.GenerateGoodID(),
@@ -192,6 +193,8 @@ public class LevelManager : MonoBehaviour
                 packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateGoodShipper(), pg.GenerateGoodID()));
                 packages.Enqueue(new Package(false, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateBadRegionAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateGoodShipper(), pg.GenerateGoodID(), 
                     OnPickedUpCallback: (obj, first) => {
+                        _packagesLeft = -2;
+                        _availablePages = 5;
                         var info = obj.GetComponent<PackageInfo>();
                         info.Processed = true;
 
@@ -206,14 +209,10 @@ public class LevelManager : MonoBehaviour
                         Utils.TalkDeferred(15, new("Problem is, I don't know which manual it is.", Color: ChatColors.Feds));
                         Utils.TalkDeferred(18, new("But whatever you do.. DO NOT throw it away or send it through the conveyor.", Color: ChatColors.Feds));
                         Utils.TalkDeferred(21, new("The machinery here could easily pay for your bloodline five times over.", Color: ChatColors.Feds));
-                        Utils.TalkDeferred(24, new("*kachunk* Anyways, I've faxed you the defusal guide. Seems like", Color: ChatColors.Feds));
+                        Utils.TalkDeferred(24, new("*kachunk* Anyways, <b>I've sent the defusal guide to your manual.</b> Seems like", Color: ChatColors.Feds));
                         Utils.TalkDeferred(27, new("you'll need to cut a wire -- just, I don't know which wire that'd be.", Color: ChatColors.Feds));
                         Utils.TalkDeferred(30, new("Either you figure it out", Color: ChatColors.Feds));
-                        Utils.Defer(30, () => _availablePages = 5);
                         Utils.TalkDeferred(33, new("or you won't need to worry about figuring it out anymore.", Color: ChatColors.Feds));
-                        Utils.TalkDeferred(36, new("By the way, there's like a minute left till that detonates. Have fun", Color: ChatColors.Feds));
-
-                        Utils.Defer(60 + 36, () => EndDay(Days.BombExploded));
 
                         EventBus.Publish<OpenC4Event>(new(
                             Success: () =>
@@ -232,6 +231,7 @@ public class LevelManager : MonoBehaviour
                 _packagesLeft = packages.Count;
                 break;
             case Days.GameEnd:
+                Debug.Log("yo");
                 Utils.Fade(new(Color.black, 1f));
                 Utils.Talk(new("This was our first project from our first semester learning Unity.", 999));
                 Utils.Talk(new("We hope you had fun playing our shitty Papers Please clone.", 999));
@@ -382,7 +382,7 @@ public class LevelManager : MonoBehaviour
                 Utils.TalkDeferred(6, new("(Maybe.. scanning packages all day isn't so bad.)"));
 
                 //BOOM happens here
-                EventBus.Publish<PlayExplosionEvent>(new());
+                Utils.Defer(8, () => EventBus.Publish<PlayExplosionEvent>(new()));
 
                 Utils.TalkDeferred(10, new("(Screams can be heard from the adjacent house to you. You rush out to investigate.)"));
                 Utils.TalkDeferred(13, new("(Was it a gas leak? A firecracker? No... it doesn't appear to be either.)"));
@@ -403,8 +403,8 @@ public class LevelManager : MonoBehaviour
                 // BOOM happens here.
                 Utils.Defer(13, () => EventBus.Publish<PlayExplosionEvent>(new()));
                 Utils.TalkDeferred(14, new("..."));
-                Utils.TalkDeferred(15, new("(The camera was shattered by the explosion, sparing hundreds of viewers the sight of a gruesome scene.)"));
-                Utils.TalkDeferred(18, new("(It's easier the second time.)"));
+                Utils.TalkDeferred(15, new("(The camera was shattered by the explosion, sparing hundreds of viewers)"));
+                Utils.TalkDeferred(18, new("(the sight of a gruesome scene. In a twisted way, It's easier to stomach the second time.)"));
                 // BOOM happens here again.
                 Utils.Defer(20, () => EventBus.Publish<PlayExplosionEvent>(new()));
 
@@ -428,7 +428,14 @@ public class LevelManager : MonoBehaviour
                 Utils.TalkDeferred(24, new("(A simple, pre-recorded message comes from the speaker.)"));
                 Utils.TalkDeferred(27, new("('Are you done playing hero yet?'", 4));
                 Utils.Defer(29, () => EventBus.Publish<PlayExplosionEvent>(new()));
-                Utils.Defer(33, () => GameManager.Inst.LoadLevel(Days.GameEnd));
+                Utils.Defer(33, () => {
+                    Utils.Fade(new(Color.black, 1f));
+                    Utils.Talk(new("This was our first project from our first semester learning Unity.", 999));
+                    Utils.Talk(new("We hope you had fun playing our shitty Papers Please clone.", 999));
+                    Utils.TalkDeferred(3, new("<b>END</b>", 999));
+                    Utils.TalkDeferred(3, new("<b>Thanks for playing</b>", 999));
+                    Utils.TalkDeferred(3, new("Credits: Juan, Austin, Justin", 999));
+                });
                 break;
             case Days.FiredForSuckingAtJob:
                 DOTween.KillAll();

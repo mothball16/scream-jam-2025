@@ -3202,7 +3202,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6655716513234049020, guid: f8350c46cfb9c3d4587d63cee82e642b, type: 3}
       propertyPath: _manualPages.Array.size
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 6655716513234049020, guid: f8350c46cfb9c3d4587d63cee82e642b, type: 3}
       propertyPath: '_manualPages.Array.data[0]'
@@ -3216,6 +3216,10 @@ PrefabInstance:
       propertyPath: '_manualPages.Array.data[2]'
       value: 
       objectReference: {fileID: 21300000, guid: 9bb34a99d631c3448bf74e81a47928dc, type: 3}
+    - target: {fileID: 6655716513234049020, guid: f8350c46cfb9c3d4587d63cee82e642b, type: 3}
+      propertyPath: '_manualPages.Array.data[3]'
+      value: 
+      objectReference: {fileID: 21300000, guid: 2b25caf508bc03c4f931e26731ac41f7, type: 3}
     - target: {fileID: 6895616357784358909, guid: f8350c46cfb9c3d4587d63cee82e642b, type: 3}
       propertyPath: m_IsActive
       value: 1
