@@ -114,8 +114,16 @@ public class LevelManager : MonoBehaviour
 
                         }));
                     packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(),  pg.GenerateGoodShipper(), pg.GenerateGoodID()));
-                    packages.Enqueue(new Package(false, pg.GenerateBadWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateBadRemark(), pg.GenerateGoodShipper(), pg.GenerateGoodID()));
-                    packages.Enqueue(new Package(false, pg.GenerateGoodWeightPair(), pg.GenerateBadZipAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateGoodShipper(), pg.GenerateGoodID()));
+                    packages.Enqueue(new Package(false, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateBadRemark(), pg.GenerateGoodShipper(), pg.GenerateGoodID()));
+                    packages.Enqueue(new Package(false, pg.GenerateGoodWeightPair(), pg.GenerateBadZipAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateGoodShipper(), pg.GenerateGoodID(),
+                        OnProcessedCallback: (obj, accepted) =>
+                        {
+                            Utils.Talk(!accepted
+                                ? new("Nice Catch")
+                                : new("Be sure to check that sender and ", Color: ChatColors.Disappointed)
+                                );
+                            if (!accepted) GameManager.Inst.SetFlag(StoryFlags.FailedFirstPackage);
+                        }));
                     _packagesLeft = packages.Count;
                 });
                 break;
@@ -199,7 +207,7 @@ public class LevelManager : MonoBehaviour
     {
         if (_activePackage == null || _activePackageModel == null)
         {
-            Utils.Talk(new("how the hell did you call this? there is no package to make a decision on", Color: ChatColors.Angry));
+            //Utils.Talk(new("how the hell did you call this? there is no package to make a decision on", Color: ChatColors.Angry));
             return;
         }
 
@@ -270,7 +278,7 @@ public class LevelManager : MonoBehaviour
         switch (day)
         {
             case Days.DayOne:
-                GameManager.Inst.LoadLevel(Days.DayTwo);
+                Utils.Defer(10,() => GameManager.Inst.LoadLevel(Days.DayTwo));
                 break;
             case Days.DayTwo:
                 GameManager.Inst.LoadLevel(Days.DayThree);
