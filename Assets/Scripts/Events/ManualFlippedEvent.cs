@@ -1,0 +1,1 @@
+public record ManualFlippedEvent(int Page);
