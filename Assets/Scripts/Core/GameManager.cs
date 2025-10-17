@@ -12,7 +12,8 @@ public enum Days
     DayTwo = 2,
     DayThree = 3,
     DayFour = 4,
-    FiredForSuckingAtJob
+    FiredForSuckingAtJob,
+    GameEnd,
 }
 
 public enum StoryFlags

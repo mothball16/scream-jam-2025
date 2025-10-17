@@ -34,7 +34,7 @@ public class LevelManager : MonoBehaviour
             StartDay(Days.DayOne);
         }
         else
-            StartDay(Days.DayOne);
+            StartDay(Days.DayThree);
     }
 
     private void StartDay(Days day)
@@ -154,6 +154,7 @@ public class LevelManager : MonoBehaviour
                 
                 break;
             case Days.DayThree:
+                GameManager.Inst.SetFlag(StoryFlags.EnablePickup);
                 maxViolations = 0;
                 packages.Enqueue(new Package(false, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateGoodShipper(), pg.GenerateBadID()));
                 packages.Enqueue(new Package(false, pg.GenerateBadWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateGoodShipper(), pg.GenerateGoodID()));
@@ -165,6 +166,15 @@ public class LevelManager : MonoBehaviour
                 packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateGoodShipper(), pg.GenerateGoodID()));
 
                 _packagesLeft = packages.Count;
+                break;
+            case Days.GameEnd:
+                Utils.Fade(new(Color.black, 1f));
+                Utils.Talk(new("This was our first project from our first semester learning Unity.", 999));
+                Utils.Talk(new("We hope you had fun playing our shitty Papers Please clone.", 999));
+                Utils.TalkDeferred(3, new("<b>END</b>", 999));
+                Utils.TalkDeferred(3, new("<b>Thanks for playing</b>", 999));
+                Utils.TalkDeferred(3, new("Credits: Juan, Austin, Justin", 999));
+
                 break;
             default:
                 Debug.LogError(day.ToString());
@@ -304,34 +314,56 @@ public class LevelManager : MonoBehaviour
             case Days.DayOne:
                 Utils.Fade(new(Color.black, 2));
                 Utils.Talk(new("(You finish your first day without incident.)"));
-                Utils.TalkDeferred(2, new("(You arrive home, eat a microwaved dinner, and lay on the bed for a nap.)"));
-                Utils.TalkDeferred(4, new("(Maybe.. scanning packages all day isn't so bad.)"));
+                Utils.TalkDeferred(3, new("(You arrive home, eat a microwaved dinner, and lay on the bed for a nap.)"));
+                Utils.TalkDeferred(6, new("(Maybe.. scanning packages all day isn't so bad.)"));
 
                 //BOOM happens here
-                Utils.Fade(new(Color.gray, 0.1f));
-                Utils.Fade(new(Color.black, 1));
+                EventBus.Publish<PlayExplosionEvent>(new());
+
                 Utils.TalkDeferred(10, new("(Screams can be heard from the adjacent house to you. You rush out to investigate.)"));
-                Utils.TalkDeferred(12, new("(Was it a gas leak? A firecracker? No... it doesn't appear to be either.)"));
-                Utils.TalkDeferred(14, new("Looking out on the street, your eyes are drawn to a truck. A delivery truck.)"));
-                Utils.TalkDeferred(16, new("(...and the gored remains of the mailman)"));
-                Utils.TalkDeferred(18, new("(...who only seconds ago had been routinely delivering a package to your neighbors.)"));
-                Utils.TalkDeferred(20, new("(You may not be the brightest, but even a dim bulb can put together two and two.)", 4));
-                Utils.Defer(24,() => GameManager.Inst.LoadLevel(Days.DayTwo));
+                Utils.TalkDeferred(13, new("(Was it a gas leak? A firecracker? No... it doesn't appear to be either.)"));
+                Utils.TalkDeferred(16, new("(Looking out on the street, your eyes are drawn to a truck. A delivery truck.)"));
+                Utils.TalkDeferred(19, new("(...and the gored remains of the mailman)"));
+                Utils.TalkDeferred(21, new("(...who only seconds ago had been routinely delivering a package to your neighbors.)"));
+                Utils.TalkDeferred(24, new("(You may not be the brightest, but even a dim bulb can put together two and two.)", 4));
+                Utils.Defer(30,() => GameManager.Inst.LoadLevel(Days.DayTwo));
                 break;
             case Days.DayTwo:
                 Utils.Fade(new(Color.black, 2));
                 Utils.Talk(new("(Day two goes by. Work is getting... stressful.)"));
                 Utils.TalkDeferred(3, new("(Rumors of the bomber are the talk of the town.)"));
                 Utils.TalkDeferred(6, new("(Local news outlets are rushing to grasp at any straw they can find.)"));
+                Utils.TalkDeferred(9, new("(On the television, a reporter is speaking to the camera, speculating on the perpetrator of last night's attack.)"));
                 Utils.TalkDeferred(9, new("(Including you, the new inspector who conveniently let a bomb through on day one.)"));
                 Utils.TalkDeferred(12, new("(Tired of the slander, you reach for the remote to turn off the television.)"));
                 // BOOM happens here.
-                Utils.TalkDeferred(15, new("stuff"));
+                Utils.Defer(13, () => EventBus.Publish<PlayExplosionEvent>(new()));
+                Utils.TalkDeferred(14, new("..."));
+                Utils.TalkDeferred(15, new("(The camera was shattered by the explosion, sparing hundreds of viewers the sight of a gruesome scene.)"));
+                Utils.TalkDeferred(18, new("(It's easier the second time.)"));
+                // BOOM happens here again.
+                Utils.Defer(20, () => EventBus.Publish<PlayExplosionEvent>(new()));
 
-                GameManager.Inst.LoadLevel(Days.DayThree);
+                Utils.TalkDeferred(21, new("(...and the third.)"));
+                // BOOM happens here again.
+                Utils.Defer(23, () => EventBus.Publish<PlayExplosionEvent>(new()));
+
+                Utils.TalkDeferred(24, new("(Tomorrow's gonna be a long day.)", 4));
+                Utils.Defer(30, () => GameManager.Inst.LoadLevel(Days.DayThree));
                 break;
             case Days.DayThree:
-                GameManager.Inst.LoadLevel(Days.DayFour);
+                Utils.Fade(new(Color.black, 2));
+                Utils.Talk(new("(It's been three days since you took up this job, and all three have been - exciting, you suppose.)"));
+                Utils.TalkDeferred(3, new("(Police swarm the office, collecting the defused bomb for further examination.)"));
+                Utils.TalkDeferred(6, new("(The weekend could not arrive any later. You can finally put off the thought of the bomber, at least till Monday.)"));
+                Utils.TalkDeferred(9, new("(As you sit down on your sofa, your phone rings, buried under a pillow.)"));
+                Utils.TalkDeferred(12, new("(Putting the phone up to your ear, you answer - wait a second...)"));
+                Utils.TalkDeferred(15, new("(This isn't your phone. And it's heavier than it should be.)"));
+                Utils.TalkDeferred(18, new("(Far, far heavier.)"));
+                Utils.TalkDeferred(21, new("(A simple, pre-recorded message comes from the speaker.)"));
+                Utils.TalkDeferred(24, new("('Are you done playing hero yet?'", 4));
+                Utils.Defer(26, () => EventBus.Publish<PlayExplosionEvent>(new()));
+                Utils.Defer(30, () => GameManager.Inst.LoadLevel(Days.GameEnd));
                 break;
             case Days.FiredForSuckingAtJob:
                 DOTween.KillAll();
