@@ -175,6 +175,7 @@ public class LevelManager : MonoBehaviour
         _connections = new()
         {
             EventBus.Subscribe<DecisionMadeEvent>(OnDecisionMade),
+            EventBus.Subscribe<PackagePickedUpEvent>(OnPackagePickedUp),
         };
         _actions.Player.Enable();
         _actions.Player.Manual.started += OnMaunalFlip;
@@ -193,6 +194,17 @@ public class LevelManager : MonoBehaviour
     {
         _currentPage = (_currentPage + 1) % _availablePages;
         EventBus.Publish<ManualFlippedEvent>(new(_currentPage));
+    }
+
+    private void OnPackagePickedUp(PackagePickedUpEvent e)
+    {
+        if (_activePackage == null || _activePackageModel == null)
+            return;
+
+
+        _activePackage.OnPickedUpCallback?.Invoke(_activePackageModel, !_activePackage.PickedUp);
+        _activePackage = _activePackage with { PickedUp = true }; 
+
     }
 
     // Update is called once per frame
