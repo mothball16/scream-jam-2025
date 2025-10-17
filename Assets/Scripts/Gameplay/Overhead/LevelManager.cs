@@ -176,6 +176,7 @@ public class LevelManager : MonoBehaviour
         {
             EventBus.Subscribe<DecisionMadeEvent>(OnDecisionMade),
             EventBus.Subscribe<PackagePickedUpEvent>(OnPackagePickedUp),
+            EventBus.Subscribe<TelephonePickupEvent>(OnTelephonePickup),
         };
         _actions.Player.Enable();
         _actions.Player.Manual.started += OnMaunalFlip;
@@ -200,11 +201,16 @@ public class LevelManager : MonoBehaviour
     {
         if (_activePackage == null || _activePackageModel == null)
             return;
-
-
         _activePackage.OnPickedUpCallback?.Invoke(_activePackageModel, !_activePackage.PickedUp);
         _activePackage = _activePackage with { PickedUp = true }; 
+    }
 
+    private void OnTelephonePickup(TelephonePickupEvent e)
+    {
+        if (_activePackage == null || _activePackageModel == null)
+            return;
+        _activePackage.OnTelephonePickedUpCallback?.Invoke(_activePackageModel, !_activePackage.NumberCalled);
+        _activePackage = _activePackage with { NumberCalled = true };
     }
 
     // Update is called once per frame
