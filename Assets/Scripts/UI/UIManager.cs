@@ -8,6 +8,7 @@ using DG.Tweening;
 using TMPro;
 using Assets.Scripts.Events;
 using Assets.Scripts.Util;
+using System.Linq;
 
 public enum ChatColors
 {
@@ -57,6 +58,7 @@ public class UIManager : MonoBehaviour
             EventBus.Subscribe<RequestDialogueEvent>(OnRequestDialogue),
             EventBus.Subscribe<FadeToEvent>(OnFadeTo),
             EventBus.Subscribe<ManualFlippedEvent>(OnManualFlipped),
+            EventBus.Subscribe<OpenC4Event>(OnC4Event)
         };
     }
 
@@ -119,9 +121,26 @@ public class UIManager : MonoBehaviour
         {
 
         }
-        
-
     }
+
+    private void OnC4Event(OpenC4Event e)
+    {
+        var accepted = new string[] { "9610 1950 6667", "961019506667" };
+        var panel = _screen.transform.Find("C4Panel");
+        panel.gameObject.SetActive(true);
+        panel.Find("Button").GetComponent<Button>().onClick.AddListener(() =>
+        {
+            if (accepted.Contains(panel.Find("InputField").GetComponent<TMP_InputField>().text)) {
+                e.Success();
+                panel.gameObject.SetActive(false);
+            } else
+            {
+                e.Fail();
+                panel.gameObject.SetActive(false);
+            }
+        });
+    }
+
 
     private void OnFadeTo(FadeToEvent e)
     {

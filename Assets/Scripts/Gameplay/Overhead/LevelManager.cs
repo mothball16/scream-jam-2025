@@ -21,6 +21,7 @@ public class LevelManager : MonoBehaviour
     private GameObject _activePackageModel;
     private bool _running;
     private InputSystem_Actions _actions;
+    [SerializeField] private GameObject _c4Model;
 
     private int _currentPage, _availablePages;
 
@@ -188,15 +189,14 @@ public class LevelManager : MonoBehaviour
                         }
                     }));
                 packages.Enqueue(new Package(false, pg.GenerateBadWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateGoodShipper(), pg.GenerateGoodID()));
-                packages.Enqueue(new Package(false, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetBadDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateGoodShipper(), pg.GenerateGoodID()));
                 packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateGoodShipper(), pg.GenerateGoodID()));
-                packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateGoodShipper(), pg.GenerateGoodID()));
-                packages.Enqueue(new Package(false, pg.GenerateGoodWeightPair(), pg.GenerateBadZipAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateGoodShipper(), pg.GenerateGoodID()));
                 packages.Enqueue(new Package(false, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateBadRegionAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateGoodShipper(), pg.GenerateGoodID(), 
                     OnPickedUpCallback: (obj, first) => {
                         var info = obj.GetComponent<PackageInfo>();
                         info.Processed = true;
 
+                        obj.SetActive(false);
+                        _c4Model.SetActive(true);
                         if (!first) return;
                         Utils.Talk(new("*ring ring*", Color: ChatColors.Feds));
                         Utils.TalkDeferred(3, new("This is Agent John from the FBI speaking.", Color: ChatColors.Feds));
@@ -212,6 +212,21 @@ public class LevelManager : MonoBehaviour
                         Utils.Defer(30, () => _availablePages = 5);
                         Utils.TalkDeferred(33, new("or you won't need to worry about figuring it out anymore.", Color: ChatColors.Feds));
                         Utils.TalkDeferred(36, new("By the way, there's like a minute left till that detonates. Have fun", Color: ChatColors.Feds));
+
+                        Utils.Defer(60 + 36, () => EndDay(Days.BombExploded));
+
+                        EventBus.Publish<OpenC4Event>(new(
+                            Success: () =>
+                            {
+                                _c4Model.SetActive(false);
+                                Utils.Talk(new("*beeeep*"));
+                                Utils.Defer(2,() => EndDay(Days.DayThree));
+                            },
+                            Fail: () =>
+                            {
+                                EndDay(Days.BombExploded);
+                            }));
+                            
                     }));
 
                 _packagesLeft = packages.Count;
@@ -401,18 +416,19 @@ public class LevelManager : MonoBehaviour
                 Utils.Defer(30, () => GameManager.Inst.LoadLevel(Days.DayThree));
                 break;
             case Days.DayThree:
-                Utils.Fade(new(Color.black, 2));
-                Utils.Talk(new("(It's been three days since you took up this job, and all three have been - exciting, you suppose.)"));
+                Utils.Fade(new(Color.black, 3));
+                Utils.Talk(new("(You successfully defuse the bomb, despite shoddy instructions and pressure under time.)"));
                 Utils.TalkDeferred(3, new("(Police swarm the office, collecting the defused bomb for further examination.)"));
-                Utils.TalkDeferred(6, new("(The weekend could not arrive any later. You can finally put off the thought of the bomber, at least till Monday.)"));
-                Utils.TalkDeferred(9, new("(As you sit down on your sofa, your phone rings, buried under a pillow.)"));
-                Utils.TalkDeferred(12, new("(Putting the phone up to your ear, you answer - wait a second...)"));
-                Utils.TalkDeferred(15, new("(This isn't your phone. And it's heavier than it should be.)"));
-                Utils.TalkDeferred(18, new("(Far, far heavier.)"));
-                Utils.TalkDeferred(21, new("(A simple, pre-recorded message comes from the speaker.)"));
-                Utils.TalkDeferred(24, new("('Are you done playing hero yet?'", 4));
-                Utils.Defer(26, () => EventBus.Publish<PlayExplosionEvent>(new()));
-                Utils.Defer(30, () => GameManager.Inst.LoadLevel(Days.GameEnd));
+                Utils.TalkDeferred(6, new("(The weekend could not arrive any later.)"));
+                Utils.TalkDeferred(9, new("You can finally put off the thought of the bomber, at least till Monday.)"));
+                Utils.TalkDeferred(12, new("(As you sit down on your sofa, your phone rings, buried under a pillow.)"));
+                Utils.TalkDeferred(15, new("(Putting the phone up to your ear, you answer - wait a second...)"));
+                Utils.TalkDeferred(18, new("(This isn't your phone. And it's heavier than it should be.)"));
+                Utils.TalkDeferred(21, new("(Far, far heavier.)"));
+                Utils.TalkDeferred(24, new("(A simple, pre-recorded message comes from the speaker.)"));
+                Utils.TalkDeferred(27, new("('Are you done playing hero yet?'", 4));
+                Utils.Defer(29, () => EventBus.Publish<PlayExplosionEvent>(new()));
+                Utils.Defer(33, () => GameManager.Inst.LoadLevel(Days.GameEnd));
                 break;
             case Days.FiredForSuckingAtJob:
                 DOTween.KillAll();
@@ -422,6 +438,12 @@ public class LevelManager : MonoBehaviour
                 Utils.TalkDeferred(6, new("...Turn in your ID at the office immediately.", 3, Color: ChatColors.Angry));
                 Utils.TalkDeferred(9, new("(Do better next time.)", Color: ChatColors.Angry));
                 Utils.Defer(14,() => GameManager.Inst.LoadLevel());
+                break;
+            case Days.BombExploded:
+                EventBus.Publish<PlayExplosionEvent>(new());
+                Utils.Fade(new(Color.black, 0.01f));
+                Utils.Talk(new("Well shit.", 3, Color: ChatColors.Disappointed));
+                Utils.Defer(5, () => GameManager.Inst.LoadLevel());
                 break;
             default:
                 Debug.LogError(day.ToString());
