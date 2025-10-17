@@ -7,15 +7,15 @@ using System.Threading.Tasks;
 
 namespace Assets.Scripts.Gameplay.Attributes
 {
-    internal class OrderID : IPackageAttribute<float, ToStringParams>
+    internal class OrderID : IPackageAttribute<string, ToStringParams>
     {
-        public AttributeHandler Handler { get; set; } = AttributeHandler.NumToString;
+        public AttributeHandler Handler { get; set; } = AttributeHandler.String;
         public ToStringParams RenderParams { get; set; } = new("", "");
-        public float Value
+        public string Value
         {
             get { return DisplayValue; }
             set { }
         }
-        public float DisplayValue { get; set; }
+        public string DisplayValue { get; set; }
     }
 }
