@@ -28,13 +28,14 @@ public class LevelManager : MonoBehaviour
 
     void Start()
     {
+        GameManager.Inst.CurrentDay = Days.DayTwo;
         if (GameManager.Inst == null)
         {
             Utils.Talk(new("(SYSTEM) GameManager not initialized. Run from the bootstrapper idiot", Color: ChatColors.Angry));
             StartDay(Days.DayOne);
         }
         else
-            StartDay(Days.DayThree);
+            StartDay(GameManager.Inst.CurrentDay);
     }
 
     private void StartDay(Days day)
@@ -256,16 +257,16 @@ public class LevelManager : MonoBehaviour
 
         if (msg.Accepted != _activePackage.Valid)
         {
-            Debug.Log("Wrong Decesion");
             violations++;
-            if(violations > maxViolations)
+            EventBus.Publish<IncorrectChoiceEvent>(new(violations));
+            if (violations > maxViolations)
             {
                 EndDay(Days.FiredForSuckingAtJob);
             }
         }
         else
         {
-            Debug.Log("Good Job");
+            EventBus.Publish<CorrectChoiceEvent>(new());
         }
 
         if (_activePackage.OnProcessedCallback is not null)

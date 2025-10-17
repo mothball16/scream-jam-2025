@@ -51,7 +51,7 @@ public class UIManager : MonoBehaviour
         _disposables = new()
         {
             EventBus.Subscribe<CorrectChoiceEvent>(OnCorrectChoice),
-            EventBus.Subscribe<IncorrectChoiceEvent>(OnIncorrectChoice),
+            //EventBus.Subscribe<IncorrectChoiceEvent>(OnIncorrectChoice),
             EventBus.Subscribe<RequestDialogueEvent>(OnRequestDialogue),
             EventBus.Subscribe<FadeToEvent>(OnFadeTo),
             EventBus.Subscribe<ManualFlippedEvent>(OnManualFlipped),
@@ -70,11 +70,12 @@ public class UIManager : MonoBehaviour
 
     }
 
+    /*
     private void OnIncorrectChoice(IncorrectChoiceEvent e)
     {
         _citations.AddRange(e.Citations);
         UpdateGameState();
-    }
+    }*/
 
     private void OnRequestDialogue(RequestDialogueEvent e)
     {
@@ -97,7 +98,7 @@ public class UIManager : MonoBehaviour
     private void OnManualFlipped(ManualFlippedEvent e)
     {
         var rect = _manual.GetComponent<RectTransform>();
-        rect.DOAnchorPos(new Vector3(0, -1250, 0), 0.5f);
+        rect.DOAnchorPos(new Vector3(0, -980, 0), 0.5f);
 
         if (e.Page == 1)
         {
