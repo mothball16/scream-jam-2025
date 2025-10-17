@@ -1,3 +1,4 @@
+using Assets.Scripts.Events;
 using Assets.Scripts.Gameplay.Attributes;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,13 @@ public class SoundManager : MonoBehaviour
     [SerializeField] private AudioClip correctChoice;
     [SerializeField] private AudioClip incorrectChoice;
     [SerializeField] private AudioClip scalePress;
+
+    [SerializeField] private AudioClip explosion;
+    [SerializeField] private AudioClip phonePickup;
+    [SerializeField] private AudioClip manualFlipped;
+
+    
+
 
 
     [SerializeField] private AudioClip packageProcessedClip;
@@ -75,9 +83,15 @@ public class SoundManager : MonoBehaviour
             EventBus.Subscribe<IncorrectChoiceEvent>(
                 (e) => PlaySound(incorrectChoice, 0.8f)),
             EventBus.Subscribe<DecisionMadeEvent>(
-                (e) => PlaySound(packageProcessedClip, 0.5f)),
+                (e) => PlaySound(packageProcessedClip, 0.2f)),
             EventBus.Subscribe<ScalePressedEvent>(
-                (e) => PlaySound(scalePress, 0.8f))
+                (e) => PlaySound(scalePress, 0.8f)),
+             EventBus.Subscribe<PlayExplosionEvent>(
+                (e) => PlaySound(explosion, 0.8f)),
+            EventBus.Subscribe<TelephonePickupEvent>(
+                (e) => PlaySound(phonePickup, 0.8f)),
+            EventBus.Subscribe<ManualFlippedEvent>(
+                (e) => PlaySound(manualFlipped, 0.8f)),
         };
 
     }
