@@ -97,7 +97,7 @@ public class UIManager : MonoBehaviour
     private void OnManualFlipped(ManualFlippedEvent e)
     {
         var rect = _manual.GetComponent<RectTransform>();
-        rect.DOAnchorPos(new Vector3(0, -800, 0), 0.5f);
+        rect.DOAnchorPos(new Vector3(0, -1250, 0), 0.5f);
 
         if (e.Page == 1)
         {
