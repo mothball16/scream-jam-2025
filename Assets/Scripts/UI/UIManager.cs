@@ -54,6 +54,7 @@ public class UIManager : MonoBehaviour
             EventBus.Subscribe<IncorrectChoiceEvent>(OnIncorrectChoice),
             EventBus.Subscribe<RequestDialogueEvent>(OnRequestDialogue),
             EventBus.Subscribe<FadeToEvent>(OnFadeTo),
+            EventBus.Subscribe<ManualFlippedEvent>(OnManualFlipped),
         };
     }
 
@@ -93,12 +94,30 @@ public class UIManager : MonoBehaviour
             });
     }
 
-    private void OnFlipManual(int page)
+    private void OnManualFlipped(ManualFlippedEvent e)
     {
         var rect = _manual.GetComponent<RectTransform>();
-        Utils.Defer(0.5f, () => { 
-            rect.DOMove(new Vector3(0, 0, 0), 0.5f);
-        });
+        rect.DOAnchorPos(new Vector3(0, -800, 0), 0.5f);
+
+        if (e.Page == 1)
+        {
+            rect.DOAnchorPos(new Vector3(0, 0, 0), 0.5f);
+            _manual.GetComponent<Image>().sprite = _manualPages[e.Page - 1];
+        }
+        else if (e.Page != 0)
+        {
+            Utils.Defer(0.5f, () =>
+            {
+                _manual.GetComponent<Image>().sprite = _manualPages[e.Page - 1];
+                rect.DOAnchorPos(new Vector3(0, 0, 0), 0.5f);
+            });
+        }
+        else
+        {
+
+        }
+        
+
     }
 
     private void OnFadeTo(FadeToEvent e)
