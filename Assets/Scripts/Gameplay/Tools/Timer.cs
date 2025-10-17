@@ -32,9 +32,9 @@ namespace Assets.Scripts.Gameplay.Tools
                 EventBus.Subscribe<SetTimedEvent>(OnTimerSet),
                 EventBus.Subscribe<CancelTimedEvent>(OnTimerCancelled),
             };
-        kjjkjjkjljkkjjkjkjjjkjkkkjjj}
+        }
         private void OnDisable()
-        {jk
+        {
             _tasks.Clear();
             _subscriptions.ForEach(x => x.Dispose());
             _subscriptions.Clear();

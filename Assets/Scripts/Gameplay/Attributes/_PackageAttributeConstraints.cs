@@ -96,7 +96,7 @@ public static class PackageAttributeConstraints
 
     public static readonly string[] amazonGood = new[] { "13579", "97531", "113355", "579", "7331", "911", "157", "33333", "975", "7777" };
     public static readonly string[] amazonBad = new[] { "24680", "135792", "8080", "113354", "429", "10203", "6017", "2201", "8642", "1112" };
-    public static readonly string[] weBayGood = new[] { "A1kjing[] weBayBad = new[] { "ABC123", "123456789012", "AABBCCDDEEFF", "1A2B3C4D5E", "ABC123456", "A1B2C3D4E5F", "1A2B3C4D5E6G7", "A1B2C3D4E5F6G", "A1B2C3D4E5F5G6", "12345ABCDE" };
+    public static readonly string[] weBayGood = new[] { "ABC123", "123456789012", "AABBCCDDEEFF", "1A2B3C4D5E", "ABC123456", "A1B2C3D4E5F", "1A2B3C4D5E6G7", "A1B2C3D4E5F6G", "A1B2C3D4E5F5G6", "12345ABCDE" };
     public static readonly string[] fexedGood = new[] { "1234", "A5674", "FEDEX4", "9876543214", "ZXCVMNB4", "IDNUM4", "SHIPIT4", "A1B2C3D4", "000000004", "TRK9999999994" };
     public static readonly string[] fexedBad = new[] { "1235", "A5670", "FEDEX3", "9876543219", "ZXCVMNB7", "IDNUM2", "SHIPIT0", "A1B2C3D9", "000000001", "TRK9999999997" };
 }
