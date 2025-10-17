@@ -130,10 +130,17 @@ public class LevelManager : MonoBehaviour
             case Days.DayTwo:
                 maxViolations = 1;
                 _availablePages = 3;
-                Utils.Talk(new("...You seen the news today?", Color: ChatColors.Angry));
+                Utils.Talk(new("...You seen the news today?"));
                 Utils.Defer(3, () =>
                 {
-                    Utils.Talk(new("<i>You messed up. Bad.</i>", Color: ChatColors.Angry));
+                    Utils.TalkDeferred(4, new("A delivery driver's van got blown up"));
+                    Utils.TalkDeferred(7, new("and they suspect that it is because of a package inspector."));
+                    Utils.TalkDeferred(10, new("SOMEONE made a mistake and let an explosive get through. ", Color: ChatColors.Angry));
+                    Utils.TalkDeferred(13, new("Just continue to be on the lookout."));
+                    Utils.TalkDeferred(21, new("Oh shoot one last thing,"));
+                    Utils.TalkDeferred(24, new("You probably already noticed but theres an extra page on the manual this time"));
+                    Utils.TalkDeferred(26, new("and yes that means more work for us"));
+                    Utils.TalkDeferred(28, new("so keep your eye on those labels."));
                     packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateGoodShipper(), pg.GenerateGoodID()));
                     packages.Enqueue(new Package(true, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateGoodShipper(), pg.GenerateGoodID()));
                     packages.Enqueue(new Package(false, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(), pg.GenerateGoodShipper(), pg.GenerateBadID()));
