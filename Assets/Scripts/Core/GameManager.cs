@@ -32,6 +32,9 @@ public class GameManager : MonoSingleton<GameManager>
         _flags = new() { };
     }
 
+    public void LoadLevel()
+        => LoadLevel(CurrentDay);
+
     public void LoadLevel(Days day)
     {
         CurrentDay = day;

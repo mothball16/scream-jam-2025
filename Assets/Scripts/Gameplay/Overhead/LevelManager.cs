@@ -7,6 +7,7 @@ using Random = UnityEngine.Random;
 using PAC = PackageAttributeConstraints;
 using Assets.Scripts.Util;
 using Assets.Scripts.Events;
+using DG.Tweening;
 /// <summary>
 /// Handles the spawning of packages and the general game flow.
 /// </summary>
@@ -33,7 +34,7 @@ public class LevelManager : MonoBehaviour
             StartDay(Days.DayOne);
         }
         else
-            StartDay(GameManager.Inst.CurrentDay);
+            StartDay(Days.DayTwo);
     }
 
     private void StartDay(Days day)
@@ -60,7 +61,7 @@ public class LevelManager : MonoBehaviour
                 });
                 Utils.Defer(6, () => {
                     Utils.TalkDeferred(3, new("Your responsibility is to examine these packages, tossing out sketchy ones."));
-                    Utils.TalkDeferred(8, new("You have a scale and a manual to get started"));
+                    Utils.TalkDeferred(8, new("You have a scale and a manual to get started."));
                     Utils.TalkDeferred(12, new("<i>F to pull up the manual.</i>"));
                     packages.Enqueue(
                        new Package(true,
@@ -98,7 +99,7 @@ public class LevelManager : MonoBehaviour
                        OnProcessedCallback: (obj, accepted) => {
                            Utils.Talk(!accepted
                                ? new("Nice job using your scale.")
-                               : new("how'd you miss the check of the only other action you have.", Color: ChatColors.Disappointed)
+                               : new("That was a freebie, man. Check the scale next time.", Color: ChatColors.Disappointed)
                                );
                            if (!accepted) GameManager.Inst.SetFlag(StoryFlags.FailedFirstPackage);
                        }));
@@ -106,8 +107,8 @@ public class LevelManager : MonoBehaviour
                     packages.Enqueue(new Package(false, pg.GenerateGoodWeightPair(), pg.GenerateGoodAddress(day), pg.GenerateGoodAddress(day), pg.GetCurrentDate(day).ToString(), pg.GenerateGoodRemark(),  pg.GenerateBadShipper(), pg.GenerateGoodID(),
                         OnSpawnedCallback: (obj) =>
                         {
-                            Utils.TalkDeferred(3, new("listen pal,"));
-                            Utils.TalkDeferred(5, new("just stay focused and you'll be fine."));
+                            Utils.TalkDeferred(3, new("Listen pal,"));
+                            Utils.TalkDeferred(5, new("just stay focused and you'll do fine."));
                             Utils.TalkDeferred(8, new("I'll check in with ya tomorrow. *click*"));
 
                         }));
@@ -117,7 +118,7 @@ public class LevelManager : MonoBehaviour
                         OnProcessedCallback: (obj, accepted) =>
                         {
                             Utils.Talk(!accepted
-                                ? new("Nice Catch")
+                                ? new("Nice catch")
                                 : new("Be sure to check that sender and ", Color: ChatColors.Disappointed)
                                 );
                             if (!accepted) GameManager.Inst.SetFlag(StoryFlags.FailedFirstPackage);
@@ -126,15 +127,17 @@ public class LevelManager : MonoBehaviour
                 });
                 break;
             case Days.DayTwo:
+                //for testing
+                GameManager.Inst.SetFlag(StoryFlags.EnablePickup);
                 maxViolations = 1;
                 _availablePages = 3;
                 Utils.Talk(new("...You seen the news today?"));
                 Utils.Defer(3, () =>
                 {
                     Utils.TalkDeferred(4, new("A delivery driver's van got blown up"));
-                    Utils.TalkDeferred(7, new("and they suspect that it is because of a package inspector."));
+                    Utils.TalkDeferred(7, new("and the"));
                     Utils.TalkDeferred(10, new("SOMEONE made a mistake and let an explosive get through. ", Color: ChatColors.Angry));
-                    Utils.TalkDeferred(13, new("Just continue to be on the lookout."));
+                    Utils.TalkDeferred(13, new("Does that someone sound familiar to you?"));
                     Utils.TalkDeferred(21, new("Oh shoot one last thing,"));
                     Utils.TalkDeferred(24, new("You probably already noticed but theres an extra page on the manual this time"));
                     Utils.TalkDeferred(26, new("and yes that means more work for us"));
@@ -214,6 +217,7 @@ public class LevelManager : MonoBehaviour
     {
         if (_activePackage == null || _activePackageModel == null)
             return;
+        Utils.Talk(new("*ring ring*"));
         _activePackage.OnTelephonePickedUpCallback?.Invoke(_activePackageModel, !_activePackage.NumberCalled);
         _activePackage = _activePackage with { NumberCalled = true };
     }
@@ -246,10 +250,7 @@ public class LevelManager : MonoBehaviour
             violations++;
             if(violations > maxViolations)
             {
-
-                //Dialogue u lost
-                //Pop up Game Over message propmting restart
-                //Load the same day
+                EndDay(Days.FiredForSuckingAtJob);
             }
         }
         else
@@ -292,11 +293,11 @@ public class LevelManager : MonoBehaviour
         return taggedObjects.Length;
     }
 
-    public void EndDay()
+    public void EndDay(Days? day = null)
     {
         if (!_running) return;
         _running = false;
-        Days day = GameManager.Inst.CurrentDay;
+        day ??= GameManager.Inst.CurrentDay;
 
         switch (day)
         {
@@ -308,6 +309,15 @@ public class LevelManager : MonoBehaviour
                 break;
             case Days.DayThree:
                 GameManager.Inst.LoadLevel(Days.DayFour);
+                break;
+            case Days.FiredForSuckingAtJob:
+                DOTween.KillAll();
+                Utils.Fade(new(Color.black, 2));
+                Utils.Talk(new("*buzz* Inspector. Management is quite concerned with your performance.", 9, Color: ChatColors.Angry));
+                Utils.TalkDeferred(3, new("As you should know, the Postal Service does not take well to inefficiencies.", 6, Color: ChatColors.Angry));
+                Utils.TalkDeferred(6, new("...Turn in your ID at the office immediately.", 3, Color: ChatColors.Angry));
+                Utils.TalkDeferred(9, new("(Do better next time.)", Color: ChatColors.Angry));
+                Utils.Defer(14,() => GameManager.Inst.LoadLevel());
                 break;
             default:
                 Debug.LogError(day.ToString());
