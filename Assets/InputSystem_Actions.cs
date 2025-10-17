@@ -153,6 +153,15 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": true
+                },
+                {
+                    ""name"": ""Manual"",
+                    ""type"": ""Button"",
+                    ""id"": ""347659a7-85c0-4281-a9d0-8ea4b2dad749"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -472,6 +481,17 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""groups"": """",
                     ""action"": ""MoveHoldDistance"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a60b6f95-c27a-4d5b-926e-904b95c2dbad"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Manual"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -1066,6 +1086,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         m_Player_Deny = m_Player.FindAction("Deny", throwIfNotFound: true);
         m_Player_Sprint = m_Player.FindAction("Sprint", throwIfNotFound: true);
         m_Player_MoveHoldDistance = m_Player.FindAction("MoveHoldDistance", throwIfNotFound: true);
+        m_Player_Manual = m_Player.FindAction("Manual", throwIfNotFound: true);
         // UI
         m_UI = asset.FindActionMap("UI", throwIfNotFound: true);
         m_UI_Navigate = m_UI.FindAction("Navigate", throwIfNotFound: true);
@@ -1166,6 +1187,7 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
     private readonly InputAction m_Player_Deny;
     private readonly InputAction m_Player_Sprint;
     private readonly InputAction m_Player_MoveHoldDistance;
+    private readonly InputAction m_Player_Manual;
     /// <summary>
     /// Provides access to input actions defined in input action map "Player".
     /// </summary>
@@ -1205,6 +1227,10 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// Provides access to the underlying input action "Player/MoveHoldDistance".
         /// </summary>
         public InputAction @MoveHoldDistance => m_Wrapper.m_Player_MoveHoldDistance;
+        /// <summary>
+        /// Provides access to the underlying input action "Player/Manual".
+        /// </summary>
+        public InputAction @Manual => m_Wrapper.m_Player_Manual;
         /// <summary>
         /// Provides access to the underlying input action map instance.
         /// </summary>
@@ -1252,6 +1278,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @MoveHoldDistance.started += instance.OnMoveHoldDistance;
             @MoveHoldDistance.performed += instance.OnMoveHoldDistance;
             @MoveHoldDistance.canceled += instance.OnMoveHoldDistance;
+            @Manual.started += instance.OnManual;
+            @Manual.performed += instance.OnManual;
+            @Manual.canceled += instance.OnManual;
         }
 
         /// <summary>
@@ -1284,6 +1313,9 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
             @MoveHoldDistance.started -= instance.OnMoveHoldDistance;
             @MoveHoldDistance.performed -= instance.OnMoveHoldDistance;
             @MoveHoldDistance.canceled -= instance.OnMoveHoldDistance;
+            @Manual.started -= instance.OnManual;
+            @Manual.performed -= instance.OnManual;
+            @Manual.canceled -= instance.OnManual;
         }
 
         /// <summary>
@@ -1633,6 +1665,13 @@ public partial class @InputSystem_Actions: IInputActionCollection2, IDisposable
         /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
         /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
         void OnMoveHoldDistance(InputAction.CallbackContext context);
+        /// <summary>
+        /// Method invoked when associated input action "Manual" is either <see cref="UnityEngine.InputSystem.InputAction.started" />, <see cref="UnityEngine.InputSystem.InputAction.performed" /> or <see cref="UnityEngine.InputSystem.InputAction.canceled" />.
+        /// </summary>
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.started" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.performed" />
+        /// <seealso cref="UnityEngine.InputSystem.InputAction.canceled" />
+        void OnManual(InputAction.CallbackContext context);
     }
     /// <summary>
     /// Interface to implement callback methods for all input action callbacks associated with input actions defined by "UI" which allows adding and removing callbacks.

@@ -18,6 +18,10 @@ public class LevelManager : MonoBehaviour
     private Package _activePackage;
     private GameObject _activePackageModel;
     private bool _running;
+    private InputSystem_Actions _actions;
+
+    private int _currentPage, _availablePages;
+
     public int violations;
     public int maxViolations;
 
@@ -41,11 +45,15 @@ public class LevelManager : MonoBehaviour
         violations = 0;
         _packagesLeft = -2;
         _running = true;
+        _availablePages = 0;
+        _currentPage = 0;
         switch (day)
         {
             case Days.DayOne:
                 maxViolations = 2;
+                _availablePages = 2;
                 //so we dont go to gameend during the dialogue sequence
+                
                 Utils.Talk(new("*yawn* What up rookie."));
                 Utils.Defer(3, () => {
                     Utils.Talk(new("Welcome to your new job! Take a look around. <i>(MOUSE to look. A/D to turn.)</i>", 3));
@@ -113,6 +121,7 @@ public class LevelManager : MonoBehaviour
                 break;
             case Days.DayTwo:
                 maxViolations = 1;
+                _availablePages = 3;
                 Utils.Talk(new("...You seen the news today?", Color: ChatColors.Angry));
                 Utils.Defer(3, () =>
                 {
@@ -144,18 +153,34 @@ public class LevelManager : MonoBehaviour
 
     }
 
+    private void Awake()
+    {
+        _actions = new();
+    }
+
     private void OnEnable()
     {
         _connections = new()
         {
             EventBus.Subscribe<DecisionMadeEvent>(OnDecisionMade),
         };
+        _actions.Player.Enable();
+        _actions.Player.Manual.started += OnMaunalFlip;
+
     }
 
     private void OnDisable()
     {
         _connections.ForEach(x => x.Dispose());
         _connections.Clear();
+        _actions.Player.Disable();
+        _actions.Player.Manual.started -= OnMaunalFlip;
+    }
+
+    private void OnMaunalFlip(UnityEngine.InputSystem.InputAction.CallbackContext obj)
+    {
+        _currentPage = (_currentPage + 1) % _availablePages;
+        EventBus.Publish<ManualFlippedEvent>(new(_currentPage));
     }
 
     // Update is called once per frame

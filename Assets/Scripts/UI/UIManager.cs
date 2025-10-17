@@ -7,6 +7,7 @@ using UnityEngine.UI;
 using DG.Tweening;
 using TMPro;
 using Assets.Scripts.Events;
+using Assets.Scripts.Util;
 
 public enum ChatColors
 {
@@ -31,7 +32,8 @@ public class UIManager : MonoBehaviour
     private List<IDisposable> _disposables;
     [SerializeField] private LevelManager _levelManager;
     [SerializeField] private Canvas _screen;
-    private Transform _dialogueBox, _dialogueTemplate;
+    [SerializeField] private Sprite[] _manualPages;
+    private Transform _dialogueBox, _dialogueTemplate, _manual;
     private Text _state;
     private Image _fade;
     private List<string> _citations;
@@ -41,6 +43,7 @@ public class UIManager : MonoBehaviour
         _dialogueBox = _screen.transform.Find("Dialogue");
         _dialogueTemplate = _dialogueBox.Find("Template");
         _fade = _screen.transform.Find("FadePanel").GetComponent<Image>();
+        _manual = _screen.transform.Find("Manual");
         _citations = new();
     }
     private void OnEnable()
@@ -51,6 +54,7 @@ public class UIManager : MonoBehaviour
             EventBus.Subscribe<IncorrectChoiceEvent>(OnIncorrectChoice),
             EventBus.Subscribe<RequestDialogueEvent>(OnRequestDialogue),
             EventBus.Subscribe<FadeToEvent>(OnFadeTo),
+            EventBus.Subscribe<ManualFlippedEvent>(OnManualFlipped),
         };
     }
 
@@ -90,6 +94,32 @@ public class UIManager : MonoBehaviour
             });
     }
 
+    private void OnManualFlipped(ManualFlippedEvent e)
+    {
+        var rect = _manual.GetComponent<RectTransform>();
+        rect.DOAnchorPos(new Vector3(0, -800, 0), 0.5f);
+
+        if (e.Page == 1)
+        {
+            rect.DOAnchorPos(new Vector3(0, 0, 0), 0.5f);
+            _manual.GetComponent<Image>().sprite = _manualPages[e.Page - 1];
+        }
+        else if (e.Page != 0)
+        {
+            Utils.Defer(0.5f, () =>
+            {
+                _manual.GetComponent<Image>().sprite = _manualPages[e.Page - 1];
+                rect.DOAnchorPos(new Vector3(0, 0, 0), 0.5f);
+            });
+        }
+        else
+        {
+
+        }
+        
+
+    }
+
     private void OnFadeTo(FadeToEvent e)
     {
         var fIn = e.Direction == FadeDirection.In;
@@ -106,6 +136,8 @@ public class UIManager : MonoBehaviour
         }
         _state.text = text;
     }
+
+    
 
     private void Update()
     {
